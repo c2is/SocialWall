@@ -9,7 +9,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "C2iS\\SocialWall\\": "src/" }
+        "psr-4": { "C2iS\\SocialWall\\": "src/" }
     },
     "minimum-stability": "dev",
     "require": {
