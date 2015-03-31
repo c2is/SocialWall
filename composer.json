@@ -14,7 +14,7 @@
     "minimum-stability": "dev",
     "require": {
         "google/apiclient": "~1.1",
-        "facebook/php-sdk-v4": "~4.0",
+        "facebook/php-sdk-v4": "~4.0.0",
         "abraham/twitteroauth": "~0.5"
     }
 }

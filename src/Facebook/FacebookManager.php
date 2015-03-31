@@ -3,7 +3,6 @@
 namespace C2iS\SocialWall\Facebook;
 
 use C2iS\SocialWall\Facebook\Exception\FacebookSessionException;
-use C2iS\SocialWall\Facebook\Exception\InvalidFacebookParametersException;
 use C2iS\SocialWall\AbstractSocialNetwork;
 use C2iS\SocialWall\Facebook\Model\Comment;
 use C2iS\SocialWall\Facebook\Model\Like;
