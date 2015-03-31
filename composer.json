@@ -1,0 +1,20 @@
+{
+    "name": "c2is/socialwall",
+    "description": "Helper component abstracting basic queries to social media platforms webservice APIs.",
+    "keywords": ["social", "api", "facebook", "google", "twitter", "flick", "instagram", "youtube"],
+    "authors": [
+        {
+            "name": "Guillaume Manen",
+            "email": "g.manen@c2is.fr"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "C2iS\\SocialWall\\": "src/" }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "google/apiclient": "~1.1",
+        "facebook/php-sdk-v4": "~4.0",
+        "abraham/twitteroauth": "~0.5"
+    }
+}
