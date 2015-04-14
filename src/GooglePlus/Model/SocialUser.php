@@ -3,6 +3,7 @@
 namespace C2iS\SocialWall\GooglePlus\Model;
 
 use C2iS\SocialWall\Model\SocialUserInterface;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialUser
@@ -11,16 +12,16 @@ use C2iS\SocialWall\Model\SocialUserInterface;
  */
 class SocialUser implements SocialUserInterface
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $name;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $image;
 
     /**

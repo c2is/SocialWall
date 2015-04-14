@@ -4,6 +4,7 @@ namespace C2iS\SocialWall\GooglePlus;
 
 use C2iS\SocialWall\AbstractSocialNetwork;
 use C2iS\SocialWall\GooglePlus\Model\Attachment;
+use C2iS\SocialWall\GooglePlus\Model\Location;
 use C2iS\SocialWall\GooglePlus\Model\SocialItem;
 use C2iS\SocialWall\GooglePlus\Model\SocialUser;
 use C2iS\SocialWall\Model\SocialItemResult;
@@ -78,17 +79,20 @@ class GooglePlusManager extends AbstractSocialNetwork
         $item->setId($source->getId());
         $item->setTitle($source->getTitle());
         $item->setUrl($source->getUrl());
-        $item->setPublishedAt($source->getPublished());
-        $item->setLocation($source->getLocation());
+        $item->setPublishedAt(new \DateTime($source->getPublished()));
         $item->setUser($this->createSocialUser($source->getActor()));
+
+        if ($source->getLocation()) {
+            $item->setLocation($this->createLocation($source->getLocation()));
+        }
 
         /** @var \Google_Service_Plus_ActivityObject $activityObject */
         $activityObject = $source->getObject();
 
         $item->setContent($activityObject->getContent());
-        $item->setPlusOners($activityObject->getPlusoners());
-        $item->setResharers($activityObject->getResharers());
-        $item->setReplies($activityObject->getReplies());
+        $item->setPlusOners($activityObject->getPlusoners()->getTotalItems());
+        $item->setResharers($activityObject->getResharers()->getTotalItems());
+        $item->setReplies($activityObject->getReplies()->getTotalItems());
 
         /** @var \Google_Service_Plus_ActivityObjectAttachments $attachment */
         foreach ($activityObject->getAttachments() as $attachment) {
@@ -138,12 +142,31 @@ class GooglePlusManager extends AbstractSocialNetwork
     }
 
     /**
+     * @param \Google_Service_Plus_Place $source
+     *
+     * @return \C2iS\SocialWall\GooglePlus\Model\Location
+     */
+    protected function createLocation($source)
+    {
+        $location = new Location();
+
+        $location->setId($source->getId());
+        $location->setDisplayName($source->getDisplayName());
+        $location->setAddress($source->getAddress()->getFormatted());
+        $location->setLatitude($source->getPosition()->getLatitude());
+        $location->setLongitude($source->getPosition()->getLongitude());
+
+        return $location;
+    }
+
+    /**
      * @return array
      */
     public function getQueryParams()
     {
         return array(
             'limit' => 'maxResults',
+            'lang' => 'language'
         );
     }
 

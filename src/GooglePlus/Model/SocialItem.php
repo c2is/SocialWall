@@ -2,46 +2,47 @@
 
 namespace C2iS\SocialWall\GooglePlus\Model;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialItem
  *
  * @package C2iS\SocialWall\GooglePlus\Model
  */
-class SocialItem implements SocialItemInterface
+class SocialItem extends AbstractSocialItem
 {
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\GooglePlus\Model\SocialUser") */
     protected $user;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var \Google_Service_Plus_Place */
+    /** @var Location @Serializer\Type("C2iS\SocialWall\GooglePlus\Model\Location") */
     protected $location;
 
-    /** @var \DateTime */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $publishedAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $title;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $content;
 
-    /** @var int */
+    /** @var int @Serializer\Type("integer") */
     protected $plusOners;
 
-    /** @var int */
+    /** @var int @Serializer\Type("integer") */
     protected $replies;
 
-    /** @var int */
+    /** @var int @Serializer\Type("integer") */
     protected $resharers;
 
-    /** @var array<\C2iS\SocialWall\GooglePlus\Model\Attachment> */
+    /** @var array<C2iS\SocialWall\GooglePlus\Model\Attachment> @Serializer\Type("array<C2iS\SocialWall\GooglePlus\Model\Attachment>") */
     protected $attachments = array();
 
     /**
@@ -85,7 +86,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @return \Google_Service_Plus_Place
+     * @return Location
      */
     public function getLocation()
     {
@@ -93,7 +94,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @param \Google_Service_Plus_Place $location
+     * @param Location $location
      *
      * @return $this
      */

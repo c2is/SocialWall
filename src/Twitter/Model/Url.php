@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Twitter\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class Url
  *
@@ -9,10 +11,10 @@ namespace C2iS\SocialWall\Twitter\Model;
  */
 class Url
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $expandedUrl;
 
     /**

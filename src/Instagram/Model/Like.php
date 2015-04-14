@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Instagram\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class Like
  *
@@ -9,7 +11,7 @@ namespace C2iS\SocialWall\Instagram\Model;
  */
 class Like
 {
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\Instagram\Model\SocialUser") */
     protected $user;
 
     /**

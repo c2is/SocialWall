@@ -1,6 +1,7 @@
 <?php
 
 namespace C2iS\SocialWall\Facebook\Model;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class Comment
@@ -9,16 +10,16 @@ namespace C2iS\SocialWall\Facebook\Model;
  */
 class Comment
 {
-    /** @var  string */
+    /** @var  string @Serializer\Type("string") */
     protected $id;
 
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\Facebook\Model\SocialUser") */
     protected $user;
 
-    /** @var  \DateTime */
+    /** @var  \DateTime @Serializer\Type("DateTime") */
     protected $createdAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $text;
 
     /**

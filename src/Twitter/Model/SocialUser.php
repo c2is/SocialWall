@@ -3,6 +3,7 @@
 namespace C2iS\SocialWall\Twitter\Model;
 
 use C2iS\SocialWall\Model\SocialUserInterface;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialUser
@@ -11,52 +12,52 @@ use C2iS\SocialWall\Model\SocialUserInterface;
  */
 class SocialUser implements SocialUserInterface
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $name;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $screenName;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $location;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $description;
 
-    /** @var boolean */
+    /** @var boolean @Serializer\Type("boolean") */
     protected $protected;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $followers;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $friends;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $listed;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $favourites;
 
-    /** @var \DateTime */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $createdAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $timezone;
 
-    /** @var boolean */
+    /** @var boolean @Serializer\Type("boolean") */
     protected $verified;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $locale;
 
-    /** @var array<UserMention> */
+    /** @var array<UserMention> @Serializer\Type("array<C2iS\SocialWall\Twitter\Model\UserMention>") */
     protected $userMentions = array();
 
     /**

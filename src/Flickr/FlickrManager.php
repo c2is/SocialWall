@@ -31,12 +31,13 @@ class FlickrManager extends AbstractSocialNetwork
             array_merge(
                 array(
                     'api_key' => $this->apiKey,
+                    'extras' => 'date_taken'
                 ),
                 $queryParams
             )
         );
-
         $url = sprintf('https://api.flickr.com/services/rest/?%s', $queryParams);
+
         $rsp = unserialize(file_get_contents($url));
 
         $results     = $rsp['photos']['photo'];
@@ -68,6 +69,7 @@ class FlickrManager extends AbstractSocialNetwork
         $item->setUserId($source['owner']);
         $item->setUrl($this->buildUrlFromPhoto($source));
         $item->setLink($this->buildLinkFromPhoto($source));
+        $item->setDateTaken(\DateTime::createFromFormat('Y-m-d H:i:s', $source['datetaken']));
 
         return $item;
     }

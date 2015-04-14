@@ -1,46 +1,43 @@
 <?php
 
-namespace C2iS\SocialWall\GooglePlus\Model;
+namespace C2iS\SocialWall\Facebook\Model;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class Attachment
  *
- * @package C2iS\SocialWall\GooglePlus\Model
+ * @package C2iS\SocialWall\Facebook\Model
  */
 class Attachment
 {
     /** @var string @Serializer\Type("string") */
-    protected $id;
+    private $title;
 
     /** @var string @Serializer\Type("string") */
-    protected $displayName;
+    private $type;
 
     /** @var string @Serializer\Type("string") */
-    protected $content;
+    private $url;
 
     /** @var string @Serializer\Type("string") */
-    protected $url;
-
-    /** @var string @Serializer\Type("string") */
-    protected $image;
+    private $image;
 
     /**
      * @return string
      */
-    public function getId()
+    public function getTitle()
     {
-        return $this->id;
+        return $this->title;
     }
 
     /**
-     * @param string $id
+     * @param string $title
      *
      * @return $this
      */
-    public function setId($id)
+    public function setTitle($title)
     {
-        $this->id = $id;
+        $this->title = $title;
 
         return $this;
     }
@@ -48,39 +45,19 @@ class Attachment
     /**
      * @return string
      */
-    public function getDisplayName()
+    public function getType()
     {
-        return $this->displayName;
+        return $this->type;
     }
 
     /**
-     * @param string $displayName
+     * @param string $type
      *
      * @return $this
      */
-    public function setDisplayName($displayName)
+    public function setType($type)
     {
-        $this->displayName = $displayName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * @param string $content
-     *
-     * @return $this
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+        $this->type = $type;
 
         return $this;
     }

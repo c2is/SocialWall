@@ -2,6 +2,7 @@
 
 namespace C2iS\SocialWall;
 
+use C2iS\SocialWall\Cache\CacheProviderInterface;
 use C2iS\SocialWall\Exception\InvalidSocialNetworkException;
 use C2iS\SocialWall\Exception\SocialNetworkNotRegisteredException;
 use C2iS\SocialWall\Template\TemplateService;
@@ -20,6 +21,9 @@ class SocialWall
 
     /** @var \C2iS\SocialWall\Template\TemplateServiceInterface */
     protected $defaultTemplateService;
+
+    /** @var \C2iS\SocialWall\Cache\CacheProviderInterface */
+    protected $cacheProvider;
 
     /**
      * @param array                    $params
@@ -64,6 +68,23 @@ class SocialWall
     }
 
     /**
+     * @param \C2iS\SocialWall\Cache\CacheProviderInterface $cacheProvider
+     *
+     * @return $this
+     */
+    public function setCacheProvider(CacheProviderInterface $cacheProvider)
+    {
+        $this->cacheProvider = $cacheProvider;
+
+        /** @var AbstractSocialNetwork $network */
+        foreach ($this->networks as $network) {
+            $network->setCacheProvider($cacheProvider);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string                   $name
      * @param string                   $class
      * @param TemplateServiceInterface $templateService
@@ -91,7 +112,7 @@ class SocialWall
 
         $this->registeredNetworks[$name] = array(
             'manager'         => $class,
-            'tempalteService' => $templateService,
+            'templateService' => $templateService,
         );
 
         return $this;
@@ -122,7 +143,9 @@ class SocialWall
 
         /** @var AbstractSocialNetwork $network */
         $network = new $managerClass($id, $secret);
+        $network->setName($networkName);
         $network->setTemplateService($templateService);
+        $network->setCacheProvider($this->cacheProvider);
         $this->networks[$networkName] = $network;
 
         return $this;

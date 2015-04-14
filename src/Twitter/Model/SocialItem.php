@@ -2,87 +2,88 @@
 
 namespace C2iS\SocialWall\Twitter\Model;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialItem
  *
  * @package C2iS\SocialWall\Twitter\Model
  */
-class SocialItem implements SocialItemInterface
+class SocialItem extends AbstractSocialItem
 {
     const REPLY_STATUS = 'status_id';
     const REPLY_USER = 'user_id';
     const REPLY_SCREEN_NAME = 'screen_name';
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $locale;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $resultType;
 
-    /** @var \DateTime */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $createdAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $text;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $source;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $truncated;
 
-    /** @var array */
+    /** @var array @Serializer\Type("array<string>") */
     protected $reply = array(
         self::REPLY_STATUS => null,
         self::REPLY_USER => null,
         self::REPLY_SCREEN_NAME => null,
     );
 
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\Twitter\Model\SocialUser") */
     protected $user;
 
-    /** @var string */
-    protected $geo;
+    /** @var string @Serializer\Type("string") */
+    protected $latitude;
 
-    /** @var string */
-    protected $coordinates;
+    /** @var string @Serializer\Type("string") */
+    protected $longitude;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $place;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $contributors;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $retweetCount;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $favoriteCount;
 
-    /** @var boolean */
+    /** @var boolean @Serializer\Type("boolean") */
     protected $favorited;
 
-    /** @var boolean */
+    /** @var boolean @Serializer\Type("boolean") */
     protected $retweeted;
 
-    /** @var boolean */
+    /** @var boolean @Serializer\Type("boolean") */
     protected $sensitive;
 
-    /** @var array<UserMention> */
+    /** @var array<UserMention> @Serializer\Type("array<C2iS\SocialWall\Twitter\Model\UserMention>") */
     protected $userMentions = array();
 
-    /** @var array<Media> */
+    /** @var array<Media> @Serializer\Type("array<C2iS\SocialWall\Twitter\Model\Media>") */
     protected $medias = array();
 
-    /** @var array<Hashtag> */
+    /** @var array<Hashtag> @Serializer\Type("array<C2iS\SocialWall\Twitter\Model\Hashtag>") */
     protected $hashtags = array();
 
-    /** @var array<Url> */
+    /** @var array<Url> @Serializer\Type("array<C2iS\SocialWall\Twitter\Model\Url>") */
     protected $urls = array();
 
     /**
@@ -266,13 +267,21 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @param string $geo
+     * @return string
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * @param string $latitude
      *
      * @return $this
      */
-    public function setGeo($geo)
+    public function setLatitude($latitude)
     {
-        $this->geo = $geo;
+        $this->latitude = $latitude;
 
         return $this;
     }
@@ -280,29 +289,21 @@ class SocialItem implements SocialItemInterface
     /**
      * @return string
      */
-    public function getGeo()
+    public function getLongitude()
     {
-        return $this->geo;
+        return $this->longitude;
     }
 
     /**
-     * @param string $coordinates
+     * @param string $longitude
      *
      * @return $this
      */
-    public function setCoordinates($coordinates)
+    public function setLongitude($longitude)
     {
-        $this->coordinates = $coordinates;
+        $this->longitude = $longitude;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCoordinates()
-    {
-        return $this->coordinates;
     }
 
     /**
@@ -561,7 +562,7 @@ class SocialItem implements SocialItemInterface
             $message = str_replace(
                 sprintf('@%s', $userMention->getScreenName()),
                 sprintf(
-                    '@<a href="http://www.twitter.com/%s">%s</a>',
+                    '@<a href="http://www.twitter.com/%s" target="_blank">%s</a>',
                     $userMention->getScreenName(),
                     $userMention->getScreenName()
                 ),
@@ -583,7 +584,7 @@ class SocialItem implements SocialItemInterface
             $message = str_replace(
                 sprintf('#%s', $hashtag->getText()),
                 sprintf(
-                    '#<a href="http://www.twitter.com/hashtag/%s">%s</a>',
+                    '#<a href="http://www.twitter.com/hashtag/%s" target="_blank">%s</a>',
                     $hashtag->getText(),
                     $hashtag->getText()
                 ),
@@ -595,7 +596,7 @@ class SocialItem implements SocialItemInterface
         foreach ($this->urls as $url) {
             $message = str_replace(
                 $url->getUrl(),
-                sprintf('<a href="%s">%s</a>', $url->getUrl(), $url->getExpandedUrl()),
+                sprintf('<a href="%s" target="_blank">%s</a>', $url->getUrl(), $url->getExpandedUrl()),
                 $message
             );
         }

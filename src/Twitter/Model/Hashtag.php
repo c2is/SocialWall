@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Twitter\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class Hashtag
  *
@@ -9,7 +11,7 @@ namespace C2iS\SocialWall\Twitter\Model;
  */
 class Hashtag
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $text;
 
     /**

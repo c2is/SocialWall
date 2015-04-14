@@ -6,6 +6,8 @@ use C2iS\SocialWall\AbstractSocialNetwork;
 use C2iS\SocialWall\YouTube\Model\SocialItem;
 use C2iS\SocialWall\YouTube\Model\SocialUser;
 use C2iS\SocialWall\Model\SocialItemResult;
+use C2iS\SocialWall\YouTube\Model\Thumbnail;
+use C2iS\SocialWall\YouTube\Model\ThumbnailCollection;
 
 /**
  * Class YouTubeManager
@@ -96,7 +98,7 @@ class YouTubeManager extends AbstractSocialNetwork
         $item->setId($source->getId());
         $item->setTitle($snippet->getTitle());
         $item->setVideoId($source->getId());
-        $item->setPublishedAt($snippet->getPublishedAt());
+        $item->setPublishedAt(new \DateTime($snippet->getPublishedAt()));
         $item->setContent($snippet->getDescription());
         $item->setUrl($this->createUrl($source->getId()));
 
@@ -108,7 +110,7 @@ class YouTubeManager extends AbstractSocialNetwork
         $item->setDislikes($statistics->getDislikeCount());
         $item->setComments($statistics->getCommentCount());
         $item->setFavorites($statistics->getFavoriteCount());
-        $item->setThumbnails($snippet->getThumbnails());
+        $item->setThumbnails($this->createThumbnailCollection($snippet->getThumbnails()));
 
         return $item;
     }
@@ -128,6 +130,54 @@ class YouTubeManager extends AbstractSocialNetwork
         $user->setImage($source->getImage() ? $source->getImage()->getUrl() : null);
 
         return $user;
+    }
+
+    /**
+     * @param \Google_Service_YouTube_ThumbnailDetails $source
+     *
+     * @return \C2iS\SocialWall\YouTube\Model\ThumbnailCollection
+     */
+    protected function createThumbnailCollection($source)
+    {
+        $thumbnailCollection = new ThumbnailCollection();
+
+        if ($source->getDefault()) {
+            $thumbnailCollection->setDefault($this->createThumbnail($source->getDefault()));
+        }
+
+        if ($source->getHigh()) {
+            $thumbnailCollection->setHigh($this->createThumbnail($source->getHigh()));
+        }
+
+        if ($source->getMaxres()) {
+            $thumbnailCollection->setMaxRes($this->createThumbnail($source->getMaxres()));
+        }
+
+        if ($source->getMedium()) {
+            $thumbnailCollection->setMedium($this->createThumbnail($source->getMedium()));
+        }
+
+        if ($source->getStandard()) {
+            $thumbnailCollection->setStandard($this->createThumbnail($source->getStandard()));
+        }
+
+        return $thumbnailCollection;
+    }
+
+    /**
+     * @param \Google_Service_YouTube_Thumbnail $source
+     *
+     * @return \C2iS\SocialWall\YouTube\Model\Thumbnail
+     */
+    protected function createThumbnail($source)
+    {
+        $thumbnail = new Thumbnail();
+
+        $thumbnail->setUrl($source->getUrl());
+        $thumbnail->setWidth($source->getWidth());
+        $thumbnail->setHeight($source->getHeight());
+
+        return $thumbnail;
     }
 
     /**

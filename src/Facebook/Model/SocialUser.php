@@ -3,13 +3,19 @@
 namespace C2iS\SocialWall\Facebook\Model;
 
 use C2iS\SocialWall\Model\SocialUserInterface;
+use JMS\Serializer\Annotation as Serializer;
 
+/**
+ * Class SocialUser
+ *
+ * @package C2iS\SocialWall\Facebook\Model
+ */
 class SocialUser implements SocialUserInterface
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $name;
 
     /**

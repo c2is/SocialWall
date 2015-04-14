@@ -2,14 +2,14 @@
 
 namespace C2iS\SocialWall\Template;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
 
 interface TemplateServiceInterface
 {
     /**
-     * @param \C2iS\SocialWall\Model\SocialItemInterface $socialItem
+     * @param \C2iS\SocialWall\Model\AbstractSocialItem $socialItem
      *
      * @return string
      */
-    public function render(SocialItemInterface $socialItem);
+    public function render(AbstractSocialItem $socialItem);
 }

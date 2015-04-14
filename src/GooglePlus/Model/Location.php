@@ -1,14 +1,15 @@
 <?php
 
 namespace C2iS\SocialWall\GooglePlus\Model;
+
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class Attachment
+ * Class Location
  *
  * @package C2iS\SocialWall\GooglePlus\Model
  */
-class Attachment
+class Location
 {
     /** @var string @Serializer\Type("string") */
     protected $id;
@@ -17,13 +18,13 @@ class Attachment
     protected $displayName;
 
     /** @var string @Serializer\Type("string") */
-    protected $content;
+    protected $address;
 
     /** @var string @Serializer\Type("string") */
-    protected $url;
+    protected $latitude;
 
     /** @var string @Serializer\Type("string") */
-    protected $image;
+    protected $longitude;
 
     /**
      * @return string
@@ -68,19 +69,19 @@ class Attachment
     /**
      * @return string
      */
-    public function getContent()
+    public function getAddress()
     {
-        return $this->content;
+        return $this->address;
     }
 
     /**
-     * @param string $content
+     * @param string $address
      *
      * @return $this
      */
-    public function setContent($content)
+    public function setAddress($address)
     {
-        $this->content = $content;
+        $this->address = $address;
 
         return $this;
     }
@@ -88,19 +89,19 @@ class Attachment
     /**
      * @return string
      */
-    public function getUrl()
+    public function getLatitude()
     {
-        return $this->url;
+        return $this->latitude;
     }
 
     /**
-     * @param string $url
+     * @param string $latitude
      *
      * @return $this
      */
-    public function setUrl($url)
+    public function setLatitude($latitude)
     {
-        $this->url = $url;
+        $this->latitude = $latitude;
 
         return $this;
     }
@@ -108,19 +109,19 @@ class Attachment
     /**
      * @return string
      */
-    public function getImage()
+    public function getLongitude()
     {
-        return $this->image;
+        return $this->longitude;
     }
 
     /**
-     * @param string $image
+     * @param string $longitude
      *
      * @return $this
      */
-    public function setImage($image)
+    public function setLongitude($longitude)
     {
-        $this->image = $image;
+        $this->longitude = $longitude;
 
         return $this;
     }

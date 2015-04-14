@@ -98,7 +98,7 @@ class InstagramManager extends AbstractSocialNetwork
         }
 
         $item->setComments($comments);
-        $item->setCreatedAt(new \DateTime(sprintf('@%s', $source->created_time)));
+        $item->setCreatedAt(\DateTime::createFromFormat('U', $source->created_time));
         $item->setUser($this->createSocialUser($source->user));
 
         return $item;
@@ -146,7 +146,7 @@ class InstagramManager extends AbstractSocialNetwork
         $comment = new Comment();
 
         $comment->setId($source->id);
-        $comment->setCreatedAt(new \DateTime(sprintf('@%s', $source->id)));
+        $comment->setCreatedAt(\DateTime::createFromFormat('U', $source->created_time));
         $comment->setMessage($source->text);
         $comment->setUser($this->createSocialUser($source->from));
 

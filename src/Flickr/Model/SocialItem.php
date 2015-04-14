@@ -2,29 +2,33 @@
 
 namespace C2iS\SocialWall\Flickr\Model;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialItem
  *
  * @package C2iS\SocialWall\Flickr\Model
  */
-class SocialItem implements SocialItemInterface
+class SocialItem extends AbstractSocialItem
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $link;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $userId;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $title;
+
+    /** @var \DateTime @Serializer\Type("DateTime") */
+    protected $dateTaken;
 
     /**
      * @return string
@@ -127,6 +131,26 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getDateTaken()
+    {
+        return $this->dateTaken;
+    }
+
+    /**
+     * @param \DateTime $dateTaken
+     *
+     * @return $this
+     */
+    public function setDateTaken($dateTaken)
+    {
+        $this->dateTaken = $dateTaken;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getSocialNetwork()
@@ -163,7 +187,7 @@ class SocialItem implements SocialItemInterface
      */
     public function getDatetime()
     {
-        return null;
+        return $this->dateTaken;
     }
 
     /**
@@ -189,5 +213,4 @@ class SocialItem implements SocialItemInterface
     {
         return null;
     }
-
 }

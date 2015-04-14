@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Twitter\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class UserMention
  *
@@ -9,13 +11,13 @@ namespace C2iS\SocialWall\Twitter\Model;
  */
 class UserMention
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $screenName;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $name;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
     /**

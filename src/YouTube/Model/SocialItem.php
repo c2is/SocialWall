@@ -2,53 +2,54 @@
 
 namespace C2iS\SocialWall\YouTube\Model;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialItem
  *
  * @package C2iS\SocialWall\YouTube\Model
  */
-class SocialItem implements SocialItemInterface
+class SocialItem extends AbstractSocialItem
 {
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\YouTube\Model\SocialUser") */
     protected $user;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var \DateTime */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $publishedAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $title;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $content;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $videoId;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $views;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $likes;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $dislikes;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $comments;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $favorites;
 
-    /** @var \Google_Service_YouTube_ThumbnailDetails */
-    protected $thumbnails = array();
+    /** @var ThumbnailCollection @Serializer\Type("C2iS\SocialWall\YouTube\Model\ThumbnailCollection") */
+    protected $thumbnails;
 
     /**
      * @return SocialUser
@@ -291,7 +292,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @return \Google_Service_YouTube_ThumbnailDetails
+     * @return ThumbnailCollection
      */
     public function getThumbnails()
     {
@@ -299,7 +300,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @param \Google_Service_YouTube_ThumbnailDetails $thumbnails
+     * @param ThumbnailCollection $thumbnails
      *
      * @return $this
      */
@@ -339,7 +340,7 @@ class SocialItem implements SocialItemInterface
      */
     public function getImage()
     {
-        return $this->thumbnails->getMedium()->getUrl();
+        return $this->thumbnails ? $this->thumbnails->getMedium()->getUrl() : null;
     }
 
     /**

@@ -87,9 +87,16 @@ class TwitterManager extends AbstractSocialNetwork
                 SocialItem::REPLY_SCREEN_NAME => $source->in_reply_to_screen_name,
             )
         );
-        $item->setGeo($source->geo);
-        $item->setCoordinates($source->coordinates);
-        $item->setPlace($source->place);
+
+        if ($source->geo) {
+            $item->setLatitude($source->geo->coordinates[0]);
+            $item->setLongitude($source->geo->coordinates[1]);
+        }
+
+        if ($source->place) {
+            $item->setPlace($source->place->full_name);
+        }
+
         $item->setContributors($source->contributors);
         $item->setRetweetCount($source->retweet_count);
         $item->setFavoriteCount($source->favorite_count);
@@ -157,6 +164,7 @@ class TwitterManager extends AbstractSocialNetwork
     protected function createSocialUser($source)
     {
         $user = new SocialUser();
+
         if (isset($source->id_str)) {
             $user->setId($source->id_str);
         }

@@ -4,6 +4,7 @@ namespace C2iS\SocialWall\Facebook;
 
 use C2iS\SocialWall\Facebook\Exception\FacebookSessionException;
 use C2iS\SocialWall\AbstractSocialNetwork;
+use C2iS\SocialWall\Facebook\Model\Attachment;
 use C2iS\SocialWall\Facebook\Model\Comment;
 use C2iS\SocialWall\Facebook\Model\Like;
 use C2iS\SocialWall\Facebook\Model\SocialItem;
@@ -51,8 +52,8 @@ class FacebookManager extends AbstractSocialNetwork
         $request  = new \Facebook\FacebookRequest(
             $this->session,
             'GET',
-            sprintf(
-                '/%s/feed?%s',
+            $url = sprintf(
+                '/%s/posts?%s',
                 $params['user_id'],
                 http_build_query(
                     array_merge(
@@ -64,6 +65,9 @@ class FacebookManager extends AbstractSocialNetwork
                 )
             )
         );
+        $client = $request->getHttpClientHandler();
+        $client->addRequestHeader('Accept-Language', 'fr-FR,fr;q=0.8');
+        $request->setHttpClientHandler($client);
         $response = $request->execute();
 
         $results     = isset($response->getResponse()->data) ? $response->getResponse()->data : array();
@@ -100,13 +104,17 @@ class FacebookManager extends AbstractSocialNetwork
         }
 
         if (isset($source->attachments)) {
-            if (isset($source->attachments->data[0]->subattachments)) {
-                $media = $source->attachments->data[0]->subattachments->data[0]->media;
-            } else {
-                $media = $source->attachments->data[0]->media;
+            foreach ($source->attachments->data as $attachment) {
+                if (isset($attachment->subattachments)) {
+                    foreach ($attachment->subattachments->data as $subattachment) {
+                        if (isset($subattachment->media->image->src)) {
+                            $item->addAttachment($this->createAttachment($subattachment));
+                        }
+                    }
+                } elseif (isset($attachment->media->image->src)) {
+                    $item->addAttachment($this->createAttachment($attachment));
+                }
             }
-
-            $item->setImage($media->image->src);
         }
 
         if (isset($source->link)) {
@@ -224,6 +232,18 @@ class FacebookManager extends AbstractSocialNetwork
         return $user;
     }
 
+    protected function createAttachment($source)
+    {
+        $attachment = new Attachment();
+
+        $attachment->setType($source->type);
+        $attachment->setUrl($source->url);
+        $attachment->setImage($source->media->image->src);
+        $attachment->setTitle(isset($source->title) ? $source->title : null);
+
+        return $attachment;
+    }
+
     /**
      * @return array
      */
@@ -231,6 +251,7 @@ class FacebookManager extends AbstractSocialNetwork
     {
         return array(
             'limit',
+            'lang' => 'locale',
         );
     }
 

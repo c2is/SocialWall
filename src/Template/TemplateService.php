@@ -2,16 +2,16 @@
 
 namespace C2iS\SocialWall\Template;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
 
 class TemplateService implements TemplateServiceInterface
 {
     /**
-     * @param \C2iS\SocialWall\Model\SocialItemInterface $socialItem
+     * @param \C2iS\SocialWall\Model\AbstractSocialItem $socialItem
      *
      * @return string
      */
-    public function render(SocialItemInterface $socialItem)
+    public function render(AbstractSocialItem $socialItem)
     {
         if (!file_exists($file = sprintf('%s/views/%s.html.php', __DIR__, $socialItem->getSocialNetwork()))) {
             $file = sprintf('%s/views/%s.html.php', __DIR__, 'social_item');

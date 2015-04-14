@@ -1,6 +1,7 @@
 <?php
 
 namespace C2iS\SocialWall\Facebook\Model;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class Like
@@ -9,10 +10,10 @@ namespace C2iS\SocialWall\Facebook\Model;
  */
 class Like
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $name;
 
     /**

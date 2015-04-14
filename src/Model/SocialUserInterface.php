@@ -2,6 +2,11 @@
 
 namespace C2iS\SocialWall\Model;
 
+/**
+ * Interface SocialUserInterface
+ *
+ * @package C2iS\SocialWall\Model
+ */
 interface SocialUserInterface
 {
     /**

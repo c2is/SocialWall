@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Twitter\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class Media
  *
@@ -11,22 +13,22 @@ class Media
 {
     const TYPE_PHOTO = 'photo';
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $mediaUrl;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $mediaSecureUrl;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $displayUrl;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $type;
 
     /**

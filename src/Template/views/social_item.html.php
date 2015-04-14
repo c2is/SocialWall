@@ -1,4 +1,4 @@
-<?php /** @var \C2iS\SocialWall\Model\SocialItemInterface $socialItem */ ?>
+<?php /** @var \C2iS\SocialWall\Model\AbstractSocialItem $socialItem */ ?>
 <div id="<?php echo sprintf('%s-%s', $socialItem->getSocialNetwork(), $socialItem->getId()); ?>" class="<?php echo $socialItem->getSocialNetwork() ?> social-item">
     <?php if ($messageHtml = $socialItem->getMessageHtml()): ?>
         <p class="message"><?php echo $messageHtml; ?></p>

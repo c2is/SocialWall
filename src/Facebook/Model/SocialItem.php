@@ -2,61 +2,67 @@
 
 namespace C2iS\SocialWall\Facebook\Model;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
-class SocialItem implements SocialItemInterface
+/**
+ * Class SocialItem
+ *
+ * @package C2iS\SocialWall\Facebook\Model
+ */
+class SocialItem extends AbstractSocialItem
 {
     const TYPE_PHOTO = 'photo';
     const TYPE_VIDEO = 'video';
     const TYPE_LINK = 'link';
     const TYPE_STATUS = 'status';
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $objectId;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $name;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $message;
 
-    /** @var string */
-    protected $image;
+    /** @var array<Attachment> @Serializer\Type("array<C2iS\SocialWall\Facebook\Model\Attachment>") */
+    protected $attachments;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $link;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $icon;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $privacy;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $type;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $statusType;
 
-    /** @var string */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $createdAt;
 
-    /** @var string */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $updatedAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $shares;
 
-    /** @var array<Like> */
+    /** @var array<Like> @Serializer\Type("array<C2iS\SocialWall\Facebook\Model\Like>") */
     protected $likes;
 
-    /** @var array<Comment> */
+    /** @var array<Comment> @Serializer\Type("array<C2iS\SocialWall\Facebook\Model\Comment>") */
     protected $comments;
 
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\Facebook\Model\SocialUser") */
     protected $user;
 
     /**
@@ -136,13 +142,33 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @param string $image
+     * @return array
+     */
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Attachment $attachment
      *
      * @return $this
      */
-    public function setImage($image)
+    public function addAttachment($attachment)
     {
-        $this->image = $image;
+        $this->attachments[] = $attachment;
+
+        return $this;
+    }
+
+    /**
+     * @param array $attachments
+     *
+     * @return $this
+     */
+    public function setAttachments($attachments)
+    {
+        $this->attachments = $attachments;
 
         return $this;
     }
@@ -152,7 +178,10 @@ class SocialItem implements SocialItemInterface
      */
     public function getImage()
     {
-        return $this->image;
+        /** @var Attachment $attachment */
+        $attachment = reset($this->attachments);
+
+        return $attachment ? $attachment->getImage() : null;
     }
 
     /**
@@ -256,7 +285,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @param string $createdAt
+     * @param \DateTime $createdAt
      *
      * @return $this
      */
@@ -268,7 +297,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -276,7 +305,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @param string $updatedAt
+     * @param \DateTime $updatedAt
      *
      * @return $this
      */
@@ -288,7 +317,7 @@ class SocialItem implements SocialItemInterface
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {

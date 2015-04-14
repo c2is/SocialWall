@@ -2,19 +2,25 @@
 
 namespace C2iS\SocialWall\Model;
 
+use JMS\Serializer\Annotation as Serializer;
 
+/**
+ * Class SocialItemResult
+ *
+ * @package C2iS\SocialWall\Model
+ */
 class SocialItemResult
 {
-    /** @var array<SocialItemInterface> */
+    /** @var array<AbstractSocialItem> @Serializer\Type("array<C2iS\SocialWall\Model\AbstractSocialItem>") */
     protected $items = array();
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $totalItems;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $previousPage;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $nextPage;
 
     /**

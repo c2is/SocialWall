@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Instagram\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class Comment
  *
@@ -9,16 +11,16 @@ namespace C2iS\SocialWall\Instagram\Model;
  */
 class Comment
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var \DateTime */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $createdAt;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $message;
 
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\Instagram\Model\SocialUser") */
     protected $user;
 
     /**

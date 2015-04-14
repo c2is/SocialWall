@@ -2,43 +2,44 @@
 
 namespace C2iS\SocialWall\Instagram\Model;
 
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class SocialItem
  *
  * @package C2iS\SocialWall\Instagram\Model
  */
-class SocialItem implements SocialItemInterface
+class SocialItem extends AbstractSocialItem
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $id;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $type;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $title;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $link;
 
-    /** @var array<string> */
+    /** @var array<string> @Serializer\Type("array<string>") */
     protected $tags;
 
-    /** @var array<Image> */
+    /** @var array<string, Image> @Serializer\Type("array<string, C2iS\SocialWall\Instagram\Model\Image>") */
     protected $images;
 
-    /** @var array<Like> */
+    /** @var array<Like> @Serializer\Type("array<C2iS\SocialWall\Instagram\Model\Like>") */
     protected $likes;
 
-    /** @var array<Comment> */
+    /** @var array<Comment> @Serializer\Type("array<C2iS\SocialWall\Instagram\Model\Comment>") */
     protected $comments;
 
-    /** @var \DateTime */
+    /** @var \DateTime @Serializer\Type("DateTime") */
     protected $createdAt;
 
-    /** @var SocialUser */
+    /** @var SocialUser @Serializer\Type("C2iS\SocialWall\Instagram\Model\SocialUser") */
     protected $user;
 
     /**

@@ -2,6 +2,8 @@
 
 namespace C2iS\SocialWall\Instagram\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class Image
  *
@@ -9,16 +11,16 @@ namespace C2iS\SocialWall\Instagram\Model;
  */
 class Image
 {
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $type;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $url;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $width;
 
-    /** @var string */
+    /** @var string @Serializer\Type("string") */
     protected $height;
 
     /**

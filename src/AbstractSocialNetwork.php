@@ -2,15 +2,22 @@
 
 namespace C2iS\SocialWall;
 
+use C2iS\SocialWall\Cache\CacheProviderInterface;
 use C2iS\SocialWall\Exception\InvalidParametersException;
-use C2iS\SocialWall\Model\SocialItemInterface;
+use C2iS\SocialWall\Model\AbstractSocialItem;
 use C2iS\SocialWall\Model\SocialItemResult;
 use C2iS\SocialWall\Template\TemplateServiceInterface;
 
 abstract class AbstractSocialNetwork
 {
+    /** @var string */
+    protected $name;
+
     /** @var TemplateServiceInterface */
     protected $templateService;
+
+    /** @var \C2iS\SocialWall\Cache\CacheProviderInterface */
+    protected $cacheProvider;
 
     /**
      * @param array $params
@@ -20,6 +27,26 @@ abstract class AbstractSocialNetwork
      * @return SocialItemResult
      */
     abstract public function getResult(array $params = array(), array $queryParams = array());
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
 
     /**
      * @param TemplateServiceInterface $templateService
@@ -34,6 +61,18 @@ abstract class AbstractSocialNetwork
     }
 
     /**
+     * @param \C2iS\SocialWall\Cache\CacheProviderInterface $cacheProvider
+     *
+     * @return $this
+     */
+    public function setCacheProvider(CacheProviderInterface $cacheProvider = null)
+    {
+        $this->cacheProvider = $cacheProvider;
+
+        return $this;
+    }
+
+    /**
      * @param array $params
      *
      * @throws Exception\InvalidParametersException
@@ -41,6 +80,12 @@ abstract class AbstractSocialNetwork
      */
     public function getSocialItems(array $params = array())
     {
+        $cacheProvider = $this->cacheProvider;
+
+        if ($cacheProvider && $cacheProvider->isCacheFresh($this->name)) {
+            return $cacheProvider->getCache($this->name);
+        }
+
         $requiredParams  = array();
         $defaultParams   = array();
         $queryParameters = array();
@@ -80,15 +125,21 @@ abstract class AbstractSocialNetwork
             }
         }
 
-        return $this->getResult($params, $queryParameters);
+        $result = $this->getResult($params, $queryParameters);
+
+        if ($cacheProvider) {
+            $cacheProvider->setCache($this->name, $result);
+        }
+
+        return $result;
     }
 
     /**
-     * @param \C2iS\SocialWall\Model\SocialItemInterface $socialItem
+     * @param \C2iS\SocialWall\Model\AbstractSocialItem $socialItem
      *
      * @return string
      */
-    public function renderSocialItem(SocialItemInterface $socialItem)
+    public function renderSocialItem(AbstractSocialItem $socialItem)
     {
         return $this->templateService->render($socialItem);
     }
