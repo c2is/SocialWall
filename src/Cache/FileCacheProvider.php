@@ -32,7 +32,9 @@ class FileCacheProvider implements CacheProviderInterface
     {
         $file = $this->getFile($network);
 
-        return file_exists($file) && filesize($file = $this->getFile($network)) && filemtime($file) + $this->duration > time();
+        return file_exists($file) && filesize($file = $this->getFile($network)) && filemtime(
+            $file
+        ) + $this->duration > time();
     }
 
     /**
@@ -46,7 +48,11 @@ class FileCacheProvider implements CacheProviderInterface
 
         if (file_exists($file = $this->getFile($network))) {
             $serializer = SerializerBuilder::create()->build();
-            $result = $serializer->deserialize(file_get_contents($file), 'C2iS\\SocialWall\\Model\\SocialItemResult', 'json');
+            $result     = $serializer->deserialize(
+                file_get_contents($file),
+                'C2iS\\SocialWall\\Model\\SocialItemResult',
+                'json'
+            );
         }
 
         return $result;
@@ -64,12 +70,19 @@ class FileCacheProvider implements CacheProviderInterface
             return;
         }
 
-        if (!file_exists($file = $this->getFile($network))) {
+        $file    = $this->getFile($network);
+        $dirName = dirname($file);
+
+        if (!file_exists($dirName)) {
+            mkdir('/'.$this->getAbsolutePath($dirName), 0775, true);
+        }
+
+        if (!file_exists($file)) {
             touch($file);
         }
 
         $serializer = SerializerBuilder::create()->build();
-        $content = $serializer->serialize($result, 'json');
+        $content    = $serializer->serialize($result, 'json');
 
         file_put_contents($file, $content);
     }
@@ -92,5 +105,30 @@ class FileCacheProvider implements CacheProviderInterface
     protected function getFile($network)
     {
         return sprintf('%s/%s', rtrim($this->path, '/'), $this->getFilename($network));
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    protected function getAbsolutePath($path)
+    {
+        $path      = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $parts     = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+        $absolutes = array();
+
+        foreach ($parts as $part) {
+            if ('.' == $part) {
+                continue;
+            }
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+
+        return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 }
