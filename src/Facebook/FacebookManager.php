@@ -68,6 +68,7 @@ class FacebookManager extends AbstractSocialNetwork
         $client = $request->getHttpClientHandler();
         $client->addRequestHeader('Accept-Language', 'fr-FR,fr;q=0.8');
         $request->setHttpClientHandler($client);
+
         $response = $request->execute();
 
         $results     = isset($response->getResponse()->data) ? $response->getResponse()->data : array();

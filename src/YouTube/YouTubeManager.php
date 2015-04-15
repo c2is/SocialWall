@@ -53,11 +53,14 @@ class YouTubeManager extends AbstractSocialNetwork
     {
         $service = new \Google_Service_YouTube($this->client);
         $results = $service->playlistItems->listPlaylistItems('id,contentDetails', $queryParams);
+
+        $socialItems = array();
+        $videos      = array();
+
         /** @var \Google_Service_YouTube_PageInfo $pageInfo */
-        $pageInfo = $results->getPageInfo();
-        $videos   = array();
-        $nextPage = $results->getNextPageToken();
-        $prevPage = $results->getPrevPageToken();
+        $pageInfo    = $results->getPageInfo();
+        $nextPage    = $results->getNextPageToken();
+        $prevPage    = $results->getPrevPageToken();
 
         /** @var \Google_Service_YouTube_PlaylistItem $item */
         foreach ($results as $item) {
@@ -67,8 +70,6 @@ class YouTubeManager extends AbstractSocialNetwork
         }
 
         $results = $service->videos->listVideos('id,snippet,statistics', array('id' => implode(',', $videos)));
-
-        $socialItems = array();
 
         /** @var \Google_Service_YouTube_Video $item */
         foreach ($results->getItems() as $item) {

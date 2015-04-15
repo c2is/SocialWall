@@ -52,12 +52,7 @@ class GooglePlusManager extends AbstractSocialNetwork
     public function getResult(array $params = array(), array $queryParams = array())
     {
         $service = new \Google_Service_Plus($this->client);
-
-        try {
-            $results = $service->activities->listActivities(sprintf('+%s', $params['user_id']), 'public', $queryParams);
-        } catch (\Exception $e) {
-            error_log(sprintf('Error calling Google Plus API : %s', $e->getMessage()));
-        }
+        $results = $service->activities->listActivities(sprintf('+%s', $params['user_id']), 'public', $queryParams);
 
         $socialItems = array();
 

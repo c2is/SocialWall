@@ -40,21 +40,24 @@ class InstagramManager extends AbstractSocialNetwork
             )
         );
 
-        $response = json_decode(
-            file_get_contents(
-                sprintf('https://api.instagram.com/v1/tags/%s/media/recent?%s', $params['tag'], $queryParams)
-            )
+        $content = @file_get_contents(
+            sprintf('https://api.instagram.com/v1/tags/%s/media/recent?%s', $params['tag'], $queryParams)
         );
+        $results = $response = $socialItems = array();
 
-        $results     = $response->data;
-        $socialItems = array();
+        if ($content) {
+            $response = json_decode($content);
+            $results  = $response->data;
+        }
 
         foreach ($results as $item) {
             $socialItems[] = $this->createSocialItem($item);
         }
 
         $result = new SocialItemResult($socialItems);
-        $result->setPreviousPage(isset($response->pagination->previous_url) ? $response->pagination->previous_url : null);
+        $result->setPreviousPage(
+            isset($response->pagination->previous_url) ? $response->pagination->previous_url : null
+        );
         $result->setNextPage(isset($response->pagination->next_url) ? $response->pagination->next_url : null);
 
         return $result;

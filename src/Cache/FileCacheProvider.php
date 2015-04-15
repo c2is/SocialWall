@@ -74,7 +74,7 @@ class FileCacheProvider implements CacheProviderInterface
         $dirName = dirname($file);
 
         if (!file_exists($dirName)) {
-            mkdir('/'.$this->getAbsolutePath($dirName), 0775, true);
+            mkdir('/'.$this->getAbsolutePath($dirName), 0777, true);
         }
 
         if (!file_exists($file)) {

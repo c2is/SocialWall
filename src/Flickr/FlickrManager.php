@@ -40,7 +40,7 @@ class FlickrManager extends AbstractSocialNetwork
 
         $rsp = unserialize(file_get_contents($url));
 
-        $results     = $rsp['photos']['photo'];
+        $results     = isset($rsp['photos']['photo']) && $rsp['photos']['photo'] ? $rsp['photos']['photo'] : array();
         $socialItems = array();
 
         foreach ($results as $item) {

@@ -125,9 +125,14 @@ abstract class AbstractSocialNetwork
             }
         }
 
-        $result = $this->getResult($params, $queryParameters);
+        try {
+            $result = $this->getResult($params, $queryParameters);
+        } catch (\Exception $e) {
+            error_log(sprintf('Error calling API for social network %s : %s', $this->getName(), $e->getMessage()));
+            $result = false;
+        }
 
-        if ($cacheProvider) {
+        if ($cacheProvider && $result) {
             $cacheProvider->setCache($this->name, $result);
         }
 
