@@ -24,6 +24,12 @@ class SocialItem extends AbstractSocialItem
     /** @var string @Serializer\Type("string") */
     protected $link;
 
+    /** @var float @Serializer\Type("float") */
+    protected $latitude;
+
+    /** @var float @Serializer\Type("float") */
+    protected $longitude;
+
     /** @var array<string> @Serializer\Type("array<string>") */
     protected $tags;
 
@@ -118,6 +124,46 @@ class SocialItem extends AbstractSocialItem
     public function setLink($link)
     {
         $this->link = $link;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * @param float $latitude
+     *
+     * @return $this
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * @param float $longitude
+     *
+     * @return $this
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

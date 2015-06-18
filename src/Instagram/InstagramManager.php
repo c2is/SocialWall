@@ -100,6 +100,11 @@ class InstagramManager extends AbstractSocialNetwork
             $comments[] = $this->createComment($comment);
         }
 
+        if (isset($source->location) && ($location = $source->location)) {
+            $item->setLatitude($location->latitude);
+            $item->setLongitude($location->longitude);
+        }
+
         $item->setComments($comments);
         $item->setCreatedAt(\DateTime::createFromFormat('U', $source->created_time));
         $item->setUser($this->createSocialUser($source->user));
