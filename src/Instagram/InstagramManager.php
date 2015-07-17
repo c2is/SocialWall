@@ -32,7 +32,7 @@ class InstagramManager extends AbstractSocialNetwork
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
         $queryParams['client_id'] = $this->clientId;
-        $content                  = @file_get_contents(
+        $content                  = $this->getFileContent(
             sprintf(
                 'https://api.instagram.com/v1/users/%s/media/recent?%s',
                 $params['user_id'],
@@ -68,7 +68,7 @@ class InstagramManager extends AbstractSocialNetwork
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
         $queryParams['client_id'] = $this->clientId;
-        $content                  = @file_get_contents(
+        $content                  = $this->getFileContent(
             sprintf(
                 'https://api.instagram.com/v1/tags/%s/media/recent?%s',
                 $params['tag'],
@@ -109,7 +109,7 @@ class InstagramManager extends AbstractSocialNetwork
             )
         );
         $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
-        $content     = @file_get_contents($url);
+        $content     = $this->getFileContent($url);
         $response    = json_decode($content);
 
         return (string)$response->data->counts->media;
@@ -129,7 +129,7 @@ class InstagramManager extends AbstractSocialNetwork
             )
         );
         $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
-        $content     = @file_get_contents($url);
+        $content     = $this->getFileContent($url);
         $response    = json_decode($content);
 
         return (string)$response->data->counts->followed_by;
@@ -248,6 +248,24 @@ class InstagramManager extends AbstractSocialNetwork
         $user->setPicture($source->profile_picture);
 
         return $user;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function getFileContent($url)
+    {
+        set_error_handler(
+            function () { /* ignore warning errors from file_get_contents*/
+            },
+            E_WARNING
+        );
+        $content = file_get_contents($url);
+        restore_error_handler();
+
+        return $content;
     }
 
     /**
