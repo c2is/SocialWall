@@ -17,6 +17,6 @@
         "google/apiclient": "~1.1",
         "facebook/php-sdk-v4": "~4.0.0",
         "abraham/twitteroauth": "~0.5",
-        "jms/serializer": "~0.17"
+        "jms/serializer": "~1.0"
     }
 }
