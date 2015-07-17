@@ -3,7 +3,13 @@
 namespace C2iS\SocialWall\Google\Model;
 
 use C2iS\SocialWall\Model\AbstractSocialItem as BaseSocialItem;
+use JMS\Serializer\Annotation as Serializer;
 
+/**
+ * Class AbstractSocialItem
+ *
+ * @package C2iS\SocialWall\Google\Model
+ */
 abstract class AbstractSocialItem extends BaseSocialItem
 {
     /** @var \DateTime @Serializer\Type("DateTime") */

@@ -3,7 +3,13 @@
 namespace C2iS\SocialWall\Google\Model;
 
 use C2iS\SocialWall\Model\SocialUserInterface;
+use JMS\Serializer\Annotation as Serializer;
 
+/**
+ * Class AbstractSocialUser
+ *
+ * @package C2iS\SocialWall\Google\Model
+ */
 abstract class AbstractSocialUser implements SocialUserInterface
 {
     /** @var string @Serializer\Type("string") */
