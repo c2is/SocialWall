@@ -12,11 +12,16 @@
     "autoload": {
         "psr-4": { "C2iS\\SocialWall\\": "src/" }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "google/apiclient": "~1.1",
         "facebook/php-sdk-v4": "~4.0.0",
         "abraham/twitteroauth": "~0.5",
         "jms/serializer": "~1.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-1.0": "1.0.x-dev"
+        }
     }
 }
