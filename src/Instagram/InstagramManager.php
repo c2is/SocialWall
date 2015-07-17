@@ -40,9 +40,11 @@ class InstagramManager extends AbstractSocialNetwork
             )
         );
 
-        $content = @file_get_contents(
-            sprintf('https://api.instagram.com/v1/tags/%s/media/recent?%s', $params['tag'], $queryParams)
+        set_error_handler(function() { /* ignore warning errors from file_get_contents*/ }, E_WARNING);
+        $content = file_get_contents(
+            urlencode(sprintf('https://api.instagram.com/v1/tags/%s/media/recent?%s', $params['tag'], $queryParams))
         );
+        restore_error_handler();
         $results = $response = $socialItems = array();
 
         if ($content) {

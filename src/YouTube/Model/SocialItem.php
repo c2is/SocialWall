@@ -2,7 +2,7 @@
 
 namespace C2iS\SocialWall\YouTube\Model;
 
-use C2iS\SocialWall\Model\AbstractSocialItem;
+use C2iS\SocialWall\Google\Model\AbstractSocialItem as BaseSocialItem;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Serializer;
  *
  * @package C2iS\SocialWall\YouTube\Model
  */
-class SocialItem extends AbstractSocialItem
+class SocialItem extends BaseSocialitem
 {
     /** @var SocialUser @Serializer\Type("C2iS\SocialWall\YouTube\Model\SocialUser") */
     protected $user;

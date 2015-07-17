@@ -52,7 +52,7 @@ class FacebookManager extends AbstractSocialNetwork
         $request  = new \Facebook\FacebookRequest(
             $this->session,
             'GET',
-            $url = sprintf(
+            sprintf(
                 '/%s/posts?%s',
                 $params['user_id'],
                 http_build_query(
