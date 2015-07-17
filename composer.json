@@ -2,6 +2,7 @@
     "name": "c2is/socialwall",
     "description": "Helper component abstracting basic queries to social media platforms webservice APIs.",
     "keywords": ["social", "api", "facebook", "google", "twitter", "flick", "instagram", "youtube"],
+    "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Guillaume Manen",
