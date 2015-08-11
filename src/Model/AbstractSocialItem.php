@@ -8,7 +8,8 @@ use JMS\Serializer\Annotation as Serializer;
  * Interface AbstractSocialItem
  *
  * @package C2iS\SocialWall\Model
- * @Serializer\Discriminator(field = "socialItemType", map={"facebook": "C2iS\SocialWall\Facebook\Model\SocialItem", "twitter":
+ * @Serializer\Discriminator(field = "socialItemType", map={"facebook": "C2iS\SocialWall\Facebook\Model\SocialItem",
+ *                                 "twitter":
  *                                 "C2iS\SocialWall\Twitter\Model\SocialItem", "flick":
  *                                 "C2iS\SocialWall\Flickr\Model\SocialItem", "instagram":
  *                                 "C2iS\SocialWall\Instagram\Model\SocialItem", "youtube":

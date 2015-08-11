@@ -1,6 +1,7 @@
 <?php
 
 namespace C2iS\SocialWall\Facebook\Model;
+
 use JMS\Serializer\Annotation as Serializer;
 
 /**

@@ -8,8 +8,19 @@ use C2iS\SocialWall\Model\AbstractSocialItem;
 use C2iS\SocialWall\Model\SocialItemResult;
 use C2iS\SocialWall\Template\TemplateServiceInterface;
 
+/**
+ * Class AbstractSocialNetwork
+ *
+ * @package C2iS\SocialWall
+ */
 abstract class AbstractSocialNetwork
 {
+    const CALL_ITEMS_FOR_USER = 'itemsForUser';
+    const CALL_ITEMS_FOR_TAG = 'itemsForTag';
+    const CALL_NUMBER_OF_ITEMS = 'numberOfItems';
+    const CALL_NUMBER_OF_SUBSCRIBERS = 'numberOfSubscribers';
+    const CACHE_ITEMS = 100;
+
     /** @var string */
     protected $name;
 
@@ -23,10 +34,33 @@ abstract class AbstractSocialNetwork
      * @param array $params
      * @param array $queryParams
      *
-     * @throws \Exception Might throw an exception if some parameters are required
      * @return SocialItemResult
      */
-    abstract public function getResult(array $params = array(), array $queryParams = array());
+    abstract protected function retrieveItemsForUser(array $params = array(), array $queryParams = array());
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return SocialItemResult
+     */
+    abstract protected function retrieveItemsForTag(array $params = array(), array $queryParams = array());
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return string
+     */
+    abstract protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array());
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return string
+     */
+    abstract protected function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array());
 
     /**
      * @return string
@@ -75,22 +109,125 @@ abstract class AbstractSocialNetwork
     /**
      * @param array $params
      *
-     * @throws Exception\InvalidParametersException
-     * @return SocialItemResult
+     * @return bool|\C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
      */
-    public function getSocialItems(array $params = array())
+    public function getItemsForUser(array $params = array())
+    {
+        return $this->execute(self::CALL_ITEMS_FOR_USER, $params);
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return bool|\C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    public function getItemsForTag(array $params = array())
+    {
+        return $this->execute(self::CALL_ITEMS_FOR_TAG, $params);
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return string
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    public function getNumberOfItems(array $params = array())
+    {
+        return $this->execute(self::CALL_NUMBER_OF_ITEMS, $params);
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return string
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    public function getNumberOfSubscribers(array $params = array())
+    {
+        return $this->execute(self::CALL_NUMBER_OF_SUBSCRIBERS, $params);
+    }
+
+    /**
+     * @param \C2iS\SocialWall\Model\AbstractSocialItem $socialItem
+     *
+     * @return string
+     */
+    public function renderSocialItem(AbstractSocialItem $socialItem)
+    {
+        return $this->templateService->render($socialItem);
+    }
+
+    /**
+     * @param string $call
+     * @param array  $params
+     *
+     * @return bool|\C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function execute($call, array $params = array())
     {
         $cacheProvider = $this->cacheProvider;
 
-        if ($cacheProvider && $cacheProvider->isCacheFresh($this->name)) {
-            return $cacheProvider->getCache($this->name);
+        if ($cacheProvider && $cacheProvider->isCacheFresh($this->name, $call)) {
+            return $cacheProvider->getCache($this->name, $call);
         }
 
-        $requiredParams  = array();
-        $defaultParams   = array();
-        $queryParameters = array();
+        // If generating cache, ups the number of items retrieved from webservices
+        if ($cacheProvider) {
+            $params['limit'] = self::CACHE_ITEMS;
+        }
+
+        $queryParameters = $this->processParams($params, $call);
+        $callMethodName  = sprintf('retrieve%s', ucfirst($call));
+
+        try {
+            $result = $this->$callMethodName($params, $queryParameters);
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+            error_log(
+                sprintf('Error calling API for social network %s (%s) : %s', $this->getName(), $call, $e->getMessage())
+            );
+            $result = false;
+        }
+
+        if ($cacheProvider && $result) {
+            $cacheProvider->setCache($this->name, $call, $result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array  $params
+     * @param string $call
+     *
+     * @return array
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     */
+    protected function processParams(array &$params, $call)
+    {
+        $requiredParams          = array();
+        $defaultParams           = array();
+        $queryParameters         = array();
+        $requiredParamMethodName = sprintf('get%sRequiredParams', ucfirst($call));
 
         foreach ($this->getRequiredParams() as $key => $value) {
+            if (is_string($key)) {
+                $defaultParams[$key] = $value;
+            } else {
+                $requiredParams[] = $value;
+            }
+        }
+
+        foreach ($this->$requiredParamMethodName() as $key => $value) {
             if (is_string($key)) {
                 $defaultParams[$key] = $value;
             } else {
@@ -125,34 +262,13 @@ abstract class AbstractSocialNetwork
             }
         }
 
-        try {
-            $result = $this->getResult($params, $queryParameters);
-        } catch (\Exception $e) {
-            error_log(sprintf('Error calling API for social network %s : %s', $this->getName(), $e->getMessage()));
-            $result = false;
-        }
-
-        if ($cacheProvider && $result) {
-            $cacheProvider->setCache($this->name, $result);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param \C2iS\SocialWall\Model\AbstractSocialItem $socialItem
-     *
-     * @return string
-     */
-    public function renderSocialItem(AbstractSocialItem $socialItem)
-    {
-        return $this->templateService->render($socialItem);
+        return $queryParameters;
     }
 
     /**
      * @return array
      */
-    public function getQueryParams()
+    protected function getQueryParams()
     {
         return array();
     }
@@ -160,7 +276,39 @@ abstract class AbstractSocialNetwork
     /**
      * @return array
      */
-    public function getRequiredParams()
+    protected function getRequiredParams()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getItemsForUserRequiredParams()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getItemsForTagRequiredParams()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getNumberOfItemsRequiredParams()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getNumberOfSubscribersRequiredParams()
     {
         return array();
     }

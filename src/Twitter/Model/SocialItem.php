@@ -39,8 +39,8 @@ class SocialItem extends AbstractSocialItem
 
     /** @var array @Serializer\Type("array<string>") */
     protected $reply = array(
-        self::REPLY_STATUS => null,
-        self::REPLY_USER => null,
+        self::REPLY_STATUS      => null,
+        self::REPLY_USER        => null,
         self::REPLY_SCREEN_NAME => null,
     );
 

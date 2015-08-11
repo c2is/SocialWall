@@ -25,52 +25,62 @@ class FileCacheProvider implements CacheProviderInterface
 
     /**
      * @param string $network
+     * @param string $call
      *
      * @return boolean
      */
-    public function isCacheFresh($network)
+    public function isCacheFresh($network, $call)
     {
-        $file = $this->getFile($network);
+        $file = $this->getFile($network, $call);
 
-        return file_exists($file) && filesize($file = $this->getFile($network)) && filemtime(
+        return file_exists($file) && filesize($file = $this->getFile($network, $call)) && filemtime(
             $file
         ) + $this->duration > time();
     }
 
     /**
      * @param string $network
+     * @param string $call
      *
-     * @return SocialItemResult
+     * @return mixed
      */
-    public function getCache($network)
+    public function getCache($network, $call)
     {
         $result = null;
 
-        if (file_exists($file = $this->getFile($network))) {
-            $serializer = SerializerBuilder::create()->build();
-            $result     = $serializer->deserialize(
-                file_get_contents($file),
-                'C2iS\\SocialWall\\Model\\SocialItemResult',
-                'json'
-            );
+        if (file_exists($file = $this->getFile($network, $call))) {
+            $result = file_get_contents($file);
+
+            if ($this->isJson($result)) {
+                $serializer = SerializerBuilder::create()->build();
+                $result     = $serializer->deserialize(
+                    file_get_contents($file),
+                    'C2iS\\SocialWall\\Model\\SocialItemResult',
+                    'json'
+                );
+            }
         }
 
         return $result;
     }
 
     /**
-     * @param string           $network
-     * @param SocialItemResult $result
+     * @param string $network
+     * @param string $call
+     * @param mixed  $result
      *
      * @return boolean
      */
-    public function setCache($network, SocialItemResult $result)
+    public function setCache($network, $call, $result)
     {
-        if (!$result || !count($result->getItems())) {
+        if ((is_string($result) && strlen($result) === 0) || ($result instanceof SocialItemResult && !count(
+                    $result->getItems()
+                )) || (!is_string($result) && !$result instanceof SocialItemResult)
+        ) {
             return;
         }
 
-        $file    = $this->getFile($network);
+        $file    = $this->getFile($network, $call);
         $dirName = dirname($file);
 
         if (!file_exists($dirName)) {
@@ -81,10 +91,12 @@ class FileCacheProvider implements CacheProviderInterface
             touch($file);
         }
 
-        $serializer = SerializerBuilder::create()->build();
-        $content    = $serializer->serialize($result, 'json');
+        if (is_object($result)) {
+            $serializer = SerializerBuilder::create()->build();
+            $result     = $serializer->serialize($result, 'json');
+        }
 
-        file_put_contents($file, $content);
+        file_put_contents($file, $result);
     }
 
     /**
@@ -99,12 +111,13 @@ class FileCacheProvider implements CacheProviderInterface
 
     /**
      * @param string $network
+     * @param string $call
      *
      * @return string
      */
-    protected function getFile($network)
+    protected function getFile($network, $call)
     {
-        return sprintf('%s/%s', rtrim($this->path, '/'), $this->getFilename($network));
+        return sprintf('%s/%s/%s', rtrim($this->path, '/'), $this->getFilename($network), $call);
     }
 
     /**
@@ -130,5 +143,21 @@ class FileCacheProvider implements CacheProviderInterface
         }
 
         return implode(DIRECTORY_SEPARATOR, $absolutes);
+    }
+
+    /**
+     * @param $string
+     *
+     * @return bool
+     */
+    protected function isJson($string)
+    {
+        if (is_numeric($string)) {
+            return false;
+        }
+
+        json_decode($string);
+
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 }

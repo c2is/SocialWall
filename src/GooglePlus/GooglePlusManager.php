@@ -3,6 +3,7 @@
 namespace C2iS\SocialWall\GooglePlus;
 
 use C2iS\SocialWall\AbstractSocialNetwork;
+use C2iS\SocialWall\Exception\NotImplementedException;
 use C2iS\SocialWall\GooglePlus\Model\Attachment;
 use C2iS\SocialWall\GooglePlus\Model\Location;
 use C2iS\SocialWall\GooglePlus\Model\SocialItem;
@@ -49,7 +50,7 @@ class GooglePlusManager extends AbstractSocialNetwork
      *
      * @return SocialItemResult
      */
-    public function getResult(array $params = array(), array $queryParams = array())
+    protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
         $service = new \Google_Service_Plus($this->client);
         $results = $service->activities->listActivities(sprintf('+%s', $params['user_id']), 'public', $queryParams);
@@ -65,6 +66,50 @@ class GooglePlusManager extends AbstractSocialNetwork
         $result->setNextPage($results->getNextPageToken());
 
         return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
+    {
+        throw new NotImplementedException(
+            'At this time Google Plus API does not provide a webservice to retrieve this information'
+        );
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
+    {
+        throw new NotImplementedException(
+            'At this time Google Plus API does not provide an efficient way to get this information'
+        );
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return string
+     */
+    public function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array())
+    {
+        $service = new \Google_Service_Plus($this->client);
+
+        /** \Google_Service_Plus_Person $person */
+        $person = $service->people->get(sprintf('+%s', $params['user_id']));
+
+        return (string)$person->circledByCount;
     }
 
     /**
@@ -166,14 +211,22 @@ class GooglePlusManager extends AbstractSocialNetwork
     {
         return array(
             'limit' => 'maxResults',
-            'lang' => 'language'
+            'lang'  => 'language'
         );
     }
 
     /**
      * @return array
      */
-    public function getRequiredParams()
+    public function getItemsForUserRequiredParams()
+    {
+        return array('user_id');
+    }
+
+    /**
+     * @return array
+     */
+    public function getNumberOfSubscribersRequiredParams()
     {
         return array('user_id');
     }

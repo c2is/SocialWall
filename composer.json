@@ -1,7 +1,16 @@
 {
     "name": "c2is/socialwall",
     "description": "Helper component abstracting basic queries to social media platforms webservice APIs.",
-    "keywords": ["social", "api", "facebook", "google", "twitter", "flick", "instagram", "youtube"],
+    "keywords": [
+        "social",
+        "api",
+        "facebook",
+        "google",
+        "twitter",
+        "flick",
+        "instagram",
+        "youtube"
+    ],
     "license": "GPL-3.0+",
     "authors": [
         {
@@ -10,7 +19,7 @@
         }
     ],
     "autoload": {
-        "psr-4": { "C2iS\\SocialWall\\": "src/" }
+        "psr-4": {"C2iS\\SocialWall\\": "src/"}
     },
     "minimum-stability": "dev",
     "require": {
@@ -18,5 +27,20 @@
         "facebook/php-sdk-v4": "~4.0.0",
         "abraham/twitteroauth": "~0.5",
         "jms/serializer": "~0.17"
+    },
+    "autoload": {
+        "psr-4": {"C2iS\\SocialWall\\": "src/"}
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "google/apiclient": "~1.1",
+        "facebook/php-sdk-v4": "~4.0.0",
+        "abraham/twitteroauth": "~0.5",
+        "jms/serializer": "~1.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-2.0": "2.0.x-dev"
+        }
     }
 }
