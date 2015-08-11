@@ -2,6 +2,7 @@
 
 namespace C2iS\SocialWall\Facebook;
 
+use C2iS\SocialWall\Exception\NotImplementedException;
 use C2iS\SocialWall\Facebook\Exception\FacebookSessionException;
 use C2iS\SocialWall\AbstractSocialNetwork;
 use C2iS\SocialWall\Facebook\Model\Attachment;
@@ -47,9 +48,9 @@ class FacebookManager extends AbstractSocialNetwork
      * @throws Exception\InvalidFacebookParametersException
      * @return SocialItemResult
      */
-    public function getResult(array $params = array(), array $queryParams = array())
+    protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        $request  = new \Facebook\FacebookRequest(
+        $request = new \Facebook\FacebookRequest(
             $this->session,
             'GET',
             sprintf(
@@ -58,14 +59,15 @@ class FacebookManager extends AbstractSocialNetwork
                 http_build_query(
                     array_merge(
                         array(
-                            'fields' => 'privacy,message,link,name,status_type,likes,comments,type,updated_time,from,attachments'
+                            'fields'  => 'privacy,message,link,name,status_type,likes,comments,type,updated_time,from,attachments',
+                            'summary' => 'true'
                         ),
                         $queryParams
                     )
                 )
             )
         );
-        $client = $request->getHttpClientHandler();
+        $client  = $request->getHttpClientHandler();
         $client->addRequestHeader('Accept-Language', 'fr-FR,fr;q=0.8');
         $request->setHttpClientHandler($client);
 
@@ -83,6 +85,58 @@ class FacebookManager extends AbstractSocialNetwork
         $result->setNextPage($response->getResponse()->paging->next);
 
         return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
+    {
+        throw new NotImplementedException('At this time Facebook Graph API does not allow search by tags');
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
+    {
+        throw new NotImplementedException(
+            'At this time Facebook Graph API does not provide an efficient way to get this information'
+        );
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return string
+     * @throws \Facebook\FacebookRequestException
+     */
+    protected function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array())
+    {
+        $request = new \Facebook\FacebookRequest(
+            $this->session,
+            'GET',
+            $url = sprintf(
+                '/%s?fields=likes',
+                $params['user_id']
+            )
+        );
+        $client  = $request->getHttpClientHandler();
+        $client->addRequestHeader('Accept-Language', 'fr-FR,fr;q=0.8');
+        $request->setHttpClientHandler($client);
+
+        $response = $request->execute();
+
+        return (string)$response->getResponse()->likes;
     }
 
     /**
@@ -259,7 +313,28 @@ class FacebookManager extends AbstractSocialNetwork
     /**
      * @return array
      */
-    public function getRequiredParams()
+    public function getItemsForUserRequiredParams()
+    {
+        return array(
+            'user_id',
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getNumberOfItemsRequiredParams()
+    {
+        return array(
+            'user_id',
+            'max_iterations' => 8,
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getNumberOfSubscribersRequiredParams()
     {
         return array(
             'user_id',

@@ -1,7 +1,16 @@
 {
     "name": "c2is/socialwall",
     "description": "Helper component abstracting basic queries to social media platforms webservice APIs.",
-    "keywords": ["social", "api", "facebook", "google", "twitter", "flick", "instagram", "youtube"],
+    "keywords": [
+        "social",
+        "api",
+        "facebook",
+        "google",
+        "twitter",
+        "flick",
+        "instagram",
+        "youtube"
+    ],
     "license": "GPL-3.0+",
     "authors": [
         {
@@ -10,7 +19,7 @@
         }
     ],
     "autoload": {
-        "psr-4": { "C2iS\\SocialWall\\": "src/" }
+        "psr-4": {"C2iS\\SocialWall\\": "src/"}
     },
     "minimum-stability": "stable",
     "require": {
@@ -21,7 +30,13 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-1.0": "1.1.x-dev"
+            "dev-v1.0": "1.0.x-dev"
+        },
+        "branch-alias": {
+            "dev-v2.0": "2.0.x-dev"
+        },
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
         }
     }
 }

@@ -34,7 +34,49 @@ class TwitterManager extends AbstractSocialNetwork
      * @throws Exception\TwitterRequestException
      * @return SocialItemResult
      */
-    public function getResult(array $params = array(), array $queryParams = array())
+    protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
+    {
+        if (is_array($queryParams['q'])) {
+            $queryParams['q'] = implode(' OR ', $queryParams['q']);
+        }
+
+        if (!$params['retweet']) {
+            $queryParams['q'] .= ' -RT';
+        }
+
+        $response = $this->connection->get('/statuses/user_timeline', $queryParams);
+
+        if (isset($response->errors)) {
+            $error = $response->errors[0];
+            throw new TwitterRequestException($error->message, $error->code);
+        }
+
+        $results     = isset($response->statuses) ? $response->statuses : array();
+        $socialItems = array();
+
+        foreach ($results as $item) {
+            $socialItems[] = $this->createSocialItem($item);
+        }
+
+        $result = new SocialItemResult($socialItems);
+        $result->setPreviousPage(
+            isset($response->search_metadata->previous_results) ? $response->search_metadata->previous_results : null
+        );
+        $result->setNextPage(
+            isset($response->search_metadata->next_results) ? $response->search_metadata->next_results : null
+        );
+
+        return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @throws Exception\TwitterRequestException
+     * @return SocialItemResult
+     */
+    protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
         if (is_array($queryParams['q'])) {
             $queryParams['q'] = implode(' OR ', $queryParams['q']);
@@ -59,10 +101,40 @@ class TwitterManager extends AbstractSocialNetwork
         }
 
         $result = new SocialItemResult($socialItems);
-        $result->setPreviousPage(isset($response->search_metadata->previous_results) ? $response->search_metadata->previous_results : null);
-        $result->setNextPage(isset($response->search_metadata->next_results) ? $response->search_metadata->next_results : null);
+        $result->setPreviousPage(
+            isset($response->search_metadata->previous_results) ? $response->search_metadata->previous_results : null
+        );
+        $result->setNextPage(
+            isset($response->search_metadata->next_results) ? $response->search_metadata->next_results : null
+        );
 
         return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     */
+    protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
+    {
+        $response = $this->connection->get('/users/show/followers_count', $queryParams);
+
+        return (string)$response->statuses_count;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return mixed
+     */
+    protected function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array())
+    {
+        $response = $this->connection->get('/users/show/followers_count', $queryParams);
+
+        return (string)$response->followers_count;
     }
 
     /**
@@ -317,6 +389,7 @@ class TwitterManager extends AbstractSocialNetwork
             'query' => 'q',
             'result_type',
             'lang',
+            'user_id',
         );
     }
 
@@ -328,7 +401,47 @@ class TwitterManager extends AbstractSocialNetwork
         return array(
             'q'           => '',
             'result_type' => 'recent',
-            'retweet'     => false,
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function getItemsForUserRequiredParams()
+    {
+        return array(
+            'retweet' => false,
+            'user_id',
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function getItemsForTagRequiredParams()
+    {
+        return array(
+            'retweet' => false,
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function getNumberOfItemsRequiredParams()
+    {
+        return array(
+            'user_id',
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function getNumberOfSubscribersRequiredParams()
+    {
+        return array(
+            'user_id',
         );
     }
 }

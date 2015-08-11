@@ -29,20 +29,20 @@ class InstagramManager extends AbstractSocialNetwork
      *
      * @return SocialItemResult
      */
-    public function getResult(array $params = array(), array $queryParams = array())
+    protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        $queryParams = http_build_query(
-            array_merge(
-                array(
-                    'client_id' => $this->clientId,
-                ),
-                $queryParams
-            )
+        $queryParams['client_id'] = $this->clientId;
+        set_error_handler(
+            function () { /* ignore warning errors from file_get_contents*/
+            },
+            E_WARNING
         );
-
-        set_error_handler(function() { /* ignore warning errors from file_get_contents*/ }, E_WARNING);
         $content = file_get_contents(
-            urlencode(sprintf('https://api.instagram.com/v1/tags/%s/media/recent?%s', $params['tag'], $queryParams))
+            sprintf(
+                'https://api.instagram.com/v1/users/%s/media/recent?%s',
+                $params['user_id'],
+                http_build_query($queryParams)
+            )
         );
         restore_error_handler();
         $results = $response = $socialItems = array();
@@ -63,6 +63,100 @@ class InstagramManager extends AbstractSocialNetwork
         $result->setNextPage(isset($response->pagination->next_url) ? $response->pagination->next_url : null);
 
         return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     */
+    protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
+    {
+        $queryParams['client_id'] = $this->clientId;
+        set_error_handler(
+            function () { /* ignore warning errors from file_get_contents*/
+            },
+            E_WARNING
+        );
+        $content = file_get_contents(
+            sprintf(
+                'https://api.instagram.com/v1/tags/%s/media/recent?%s',
+                $params['tag'],
+                http_build_query($queryParams)
+            )
+        );
+        restore_error_handler();
+        $results = $response = $socialItems = array();
+
+        if ($content) {
+            $response = json_decode($content);
+            $results  = $response->data;
+        }
+
+        foreach ($results as $item) {
+            $socialItems[] = $this->createSocialItem($item);
+        }
+
+        $result = new SocialItemResult($socialItems);
+        $result->setPreviousPage(
+            isset($response->pagination->previous_url) ? $response->pagination->previous_url : null
+        );
+        $result->setNextPage(isset($response->pagination->next_url) ? $response->pagination->next_url : null);
+
+        return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     */
+    protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
+    {
+        $queryParams = http_build_query(
+            array(
+                'client_id' => $this->clientId,
+            )
+        );
+        $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
+        set_error_handler(
+            function () { /* ignore warning errors from file_get_contents*/
+            },
+            E_WARNING
+        );
+        $content = file_get_contents($url);
+        restore_error_handler();
+        $response = json_decode($content);
+
+        return (string)$response->data->counts->media;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return string
+     */
+    protected function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array())
+    {
+        $queryParams = http_build_query(
+            array(
+                'client_id' => $this->clientId,
+            )
+        );
+        $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
+        set_error_handler(
+            function () { /* ignore warning errors from file_get_contents*/
+            },
+            E_WARNING
+        );
+        $content = file_get_contents($url);
+        restore_error_handler();
+        $response = json_decode($content);
+
+        return (string)$response->data->counts->followed_by;
     }
 
     /**
@@ -193,10 +287,40 @@ class InstagramManager extends AbstractSocialNetwork
     /**
      * @return array
      */
-    public function getRequiredParams()
+    public function getItemsForUserRequiredParams()
+    {
+        return array(
+            'user_id'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getItemsForTagRequiredParams()
     {
         return array(
             'tag'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getNumberOfItemsRequiredParams()
+    {
+        return array(
+            'user_id'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getNumberOfSubscribersRequiredParams()
+    {
+        return array(
+            'user_id'
         );
     }
 }

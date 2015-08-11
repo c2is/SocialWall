@@ -3,6 +3,7 @@
 namespace C2iS\SocialWall\YouTube;
 
 use C2iS\SocialWall\AbstractSocialNetwork;
+use C2iS\SocialWall\Exception\NotImplementedException;
 use C2iS\SocialWall\YouTube\Model\SocialItem;
 use C2iS\SocialWall\YouTube\Model\SocialUser;
 use C2iS\SocialWall\Model\SocialItemResult;
@@ -49,18 +50,63 @@ class YouTubeManager extends AbstractSocialNetwork
      *
      * @return SocialItemResult
      */
-    public function getResult(array $params = array(), array $queryParams = array())
+    protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        $service = new \Google_Service_YouTube($this->client);
-        $results = $service->playlistItems->listPlaylistItems('id,contentDetails', $queryParams);
+        // Limit for youtube is maximum 50 (webservice limitation)
+        $queryParams['maxResults'] = min(50, $queryParams['maxResults']);
+        $service                   = new \Google_Service_YouTube($this->client);
+        $results                   = $service->search->listSearch('id', $queryParams);
 
         $socialItems = array();
         $videos      = array();
 
         /** @var \Google_Service_YouTube_PageInfo $pageInfo */
-        $pageInfo    = $results->getPageInfo();
-        $nextPage    = $results->getNextPageToken();
-        $prevPage    = $results->getPrevPageToken();
+        $pageInfo = $results->getPageInfo();
+        $nextPage = $results->getNextPageToken();
+        $prevPage = $results->getPrevPageToken();
+
+        /** @var \Google_Service_YouTube_SearchResult $item */
+        foreach ($results as $item) {
+            /** @var \Google_Service_YouTube_ResourceId */
+            $id = $item->getId();
+            $videos[] = $id->getVideoId();
+        }
+
+        $results = $service->videos->listVideos('id,snippet,statistics', array('id' => implode(',', $videos)));
+
+        /** @var \Google_Service_YouTube_Video $item */
+        foreach ($results->getItems() as $item) {
+            $socialItems[] = $this->createSocialItem($item);
+        }
+
+        $result = new SocialItemResult($socialItems);
+        $result->setNextPage($nextPage);
+        $result->setPreviousPage($prevPage);
+        $result->setTotalItems($pageInfo->getTotalResults());
+
+        return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     */
+    protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
+    {
+        // Limit for youtube is maximum 50 (webservice limitation)
+        $queryParams['maxResults'] = min(50, $queryParams['maxResults']);
+        $service                   = new \Google_Service_YouTube($this->client);
+        $results                   = $service->playlistItems->listPlaylistItems('id,contentDetails', $queryParams);
+
+        $socialItems = array();
+        $videos      = array();
+
+        /** @var \Google_Service_YouTube_PageInfo $pageInfo */
+        $pageInfo = $results->getPageInfo();
+        $nextPage = $results->getNextPageToken();
+        $prevPage = $results->getPrevPageToken();
 
         /** @var \Google_Service_YouTube_PlaylistItem $item */
         foreach ($results as $item) {
@@ -82,6 +128,34 @@ class YouTubeManager extends AbstractSocialNetwork
         $result->setTotalItems($pageInfo->getTotalResults());
 
         return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
+    {
+        throw new NotImplementedException(
+            'At this time Youtube API does not provide an efficient way to get this information'
+        );
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return string
+     */
+    public function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array())
+    {
+        $service = new \Google_Service_YouTube($this->client);
+
+        return (string)$service->channels->listChannels('id,statistics', array('id' => $queryParams['channelId']))->getItems(
+        )[0]->getStatistics()->viewCount;
     }
 
     /**
@@ -199,14 +273,31 @@ class YouTubeManager extends AbstractSocialNetwork
         return array(
             'limit' => 'maxResults',
             'playlistId',
+            'channelId',
         );
     }
 
     /**
      * @return array
      */
-    public function getRequiredParams()
+    public function getItemsForTagRequiredParams()
     {
         return array('playlistId');
+    }
+
+    /**
+     * @return array
+     */
+    public function getItemsForUserRequiredParams()
+    {
+        return array('channelId');
+    }
+
+    /**
+     * @return array
+     */
+    public function getNumberOfSubscribersRequiredParams()
+    {
+        return array('channelId');
     }
 }

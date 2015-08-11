@@ -38,19 +38,19 @@ class SocialWall
         }
 
         $this->registeredNetworks = array(
-            'twitter'   => array(
+            'twitter'     => array(
                 'manager'         => '\\C2iS\\SocialWall\\Twitter\\TwitterManager',
                 'templateService' => $defaultTemplateService,
             ),
-            'facebook'  => array(
+            'facebook'    => array(
                 'manager'         => '\\C2iS\\SocialWall\\Facebook\\FacebookManager',
                 'templateService' => $defaultTemplateService,
             ),
-            'flickr'    => array(
+            'flickr'      => array(
                 'manager'         => '\\C2iS\\SocialWall\\Flickr\\FlickrManager',
                 'templateService' => $defaultTemplateService,
             ),
-            'instagram' => array(
+            'instagram'   => array(
                 'manager'         => '\\C2iS\\SocialWall\\Instagram\\InstagramManager',
                 'templateService' => $defaultTemplateService,
             ),
@@ -58,7 +58,7 @@ class SocialWall
                 'manager'         => '\\C2iS\\SocialWall\\GooglePlus\\GooglePlusManager',
                 'templateService' => $defaultTemplateService,
             ),
-            'youtube' => array(
+            'youtube'     => array(
                 'manager'         => '\\C2iS\\SocialWall\\YouTube\\YouTubeManager',
                 'templateService' => $defaultTemplateService,
             ),
