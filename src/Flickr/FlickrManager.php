@@ -33,24 +33,7 @@ class FlickrManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        $queryParams['api_key'] = $this->apiKey;
-        $url                    = sprintf('https://api.flickr.com/services/rest/?%s', http_build_query($queryParams));
-
-        $rsp = unserialize(file_get_contents($url));
-
-        $results     = isset($rsp['photos']['photo']) && $rsp['photos']['photo'] ? $rsp['photos']['photo'] : array();
-        $socialItems = array();
-
-        foreach ($results as $item) {
-            $socialItems[] = $this->createSocialItem($item);
-        }
-
-        $result = new SocialItemResult($socialItems);
-        $result->setTotalItems($rsp['photos']['total']);
-        $result->setPreviousPage($rsp['photos']['page'] - 1);
-        $result->setNextPage($rsp['photos']['page'] + 1);
-
-        return $result;
+        return $this->retrieveItemsFromWebservice($params, $queryParams);
     }
 
     /**
@@ -60,6 +43,17 @@ class FlickrManager extends AbstractSocialNetwork
      * @return SocialItemResult
      */
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
+    {
+        return $this->retrieveItemsFromWebservice($params, $queryParams);
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     */
+    protected function retrieveItemsFromWebservice(array $params = array(), array $queryParams = array())
     {
         $queryParams['api_key'] = $this->apiKey;
         $url                    = sprintf('https://api.flickr.com/services/rest/?%s', http_build_query($queryParams));

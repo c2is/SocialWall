@@ -2,8 +2,6 @@
 
 namespace C2iS\SocialWall\Cache;
 
-use C2iS\SocialWall\Model\SocialItemResult;
-
 /**
  * Interface CacheProviderInterface
  *

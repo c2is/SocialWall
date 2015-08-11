@@ -46,27 +46,7 @@ class TwitterManager extends AbstractSocialNetwork
 
         $response = $this->connection->get('/statuses/user_timeline', $queryParams);
 
-        if (isset($response->errors)) {
-            $error = $response->errors[0];
-            throw new TwitterRequestException($error->message, $error->code);
-        }
-
-        $results     = isset($response->statuses) ? $response->statuses : array();
-        $socialItems = array();
-
-        foreach ($results as $item) {
-            $socialItems[] = $this->createSocialItem($item);
-        }
-
-        $result = new SocialItemResult($socialItems);
-        $result->setPreviousPage(
-            isset($response->search_metadata->previous_results) ? $response->search_metadata->previous_results : null
-        );
-        $result->setNextPage(
-            isset($response->search_metadata->next_results) ? $response->search_metadata->next_results : null
-        );
-
-        return $result;
+        return $response ? $this->getItemsFromResponse($response) : false;
     }
 
     /**
@@ -88,6 +68,17 @@ class TwitterManager extends AbstractSocialNetwork
 
         $response = $this->connection->get('/search/tweets', $queryParams);
 
+        return $response ? $this->getItemsFromResponse($response) : false;
+    }
+
+    /**
+     * @param object $response
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Twitter\Exception\TwitterRequestException
+     */
+    protected function getItemsFromResponse($response)
+    {
         if (isset($response->errors)) {
             $error = $response->errors[0];
             throw new TwitterRequestException($error->message, $error->code);
