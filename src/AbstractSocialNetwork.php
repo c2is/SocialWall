@@ -191,7 +191,6 @@ abstract class AbstractSocialNetwork
         try {
             $result = $this->$callMethodName($params, $queryParameters);
         } catch (\Exception $e) {
-            var_dump($e->getMessage());
             error_log(
                 sprintf('Error calling API for social network %s (%s) : %s', $this->getName(), $call, $e->getMessage())
             );
