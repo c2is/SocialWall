@@ -21,6 +21,12 @@ class Attachment
     private $url;
 
     /** @var string @Serializer\Type("string") */
+    private $width;
+
+    /** @var string @Serializer\Type("string") */
+    private $height;
+
+    /** @var string @Serializer\Type("string") */
     private $image;
 
     /**
@@ -79,6 +85,46 @@ class Attachment
     public function setUrl($url)
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+    /**
+     * @param string $width
+     *
+     * @return $this
+     */
+    public function setWidth($width)
+    {
+        $this->width = $width;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeight()
+    {
+        return $this->height;
+    }
+
+    /**
+     * @param string $height
+     *
+     * @return $this
+     */
+    public function setHeight($height)
+    {
+        $this->height = $height;
 
         return $this;
     }
