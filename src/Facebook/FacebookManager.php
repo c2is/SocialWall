@@ -293,6 +293,8 @@ class FacebookManager extends AbstractSocialNetwork
 
         $attachment->setType($source->type);
         $attachment->setUrl($source->url);
+        $attachment->setWidth($source->media->image->width);
+        $attachment->setHeight($source->media->image->height);
         $attachment->setImage($source->media->image->src);
         $attachment->setTitle(isset($source->title) ? $source->title : null);
 
