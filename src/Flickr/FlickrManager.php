@@ -44,6 +44,10 @@ class FlickrManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
+        if (is_array($queryParams['tags'])) {
+            $queryParams['tags'] = implode(',', $queryParams['tags']);
+        }
+
         return $this->retrieveItemsFromWebservice($params, $queryParams);
     }
 
