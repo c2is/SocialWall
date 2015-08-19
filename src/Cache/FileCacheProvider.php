@@ -52,7 +52,7 @@ class FileCacheProvider implements CacheProviderInterface
             $result = file_get_contents($file);
 
             if ($this->isJson($result)) {
-                $serializer = SerializerBuilder::create()->build();
+                $serializer = $this->getSerializer();
                 $result     = $serializer->deserialize(
                     file_get_contents($file),
                     'C2iS\\SocialWall\\Model\\SocialItemResult',
@@ -92,7 +92,7 @@ class FileCacheProvider implements CacheProviderInterface
         }
 
         if (is_object($result)) {
-            $serializer = SerializerBuilder::create()->build();
+            $serializer = $this->getSerializer();
             $result     = $serializer->serialize($result, 'json');
         }
 
@@ -159,5 +159,16 @@ class FileCacheProvider implements CacheProviderInterface
         json_decode($string);
 
         return (json_last_error() == JSON_ERROR_NONE);
+    }
+
+    /**
+     * @return \JMS\Serializer\Serializer
+     */
+    protected function getSerializer()
+    {
+        $serializerBuilder = SerializerBuilder::create();
+        $serializerBuilder->setCacheDir(sprintf('%s/annotations', $this->path));
+
+        return $serializerBuilder->build();
     }
 }
