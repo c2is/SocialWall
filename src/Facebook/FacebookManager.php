@@ -73,7 +73,8 @@ class FacebookManager extends AbstractSocialNetwork
 
         $response = $request->execute();
 
-        $results     = isset($response->getResponse()->data) ? $response->getResponse()->data : array();
+        $results = isset($response->getResponse()->data) ? $response->getResponse()->data : array();
+
         $socialItems = array();
 
         foreach ($results as $item) {
@@ -196,7 +197,9 @@ class FacebookManager extends AbstractSocialNetwork
             $item->setType($source->type);
         }
 
-        $item->setCreatedAt(new \DateTime($source->created_time));
+        if (isset($source->created_time)) {
+            $item->setCreatedAt(new \DateTime($source->created_time));
+        }
 
         if (isset($source->updated_time)) {
             $item->setUpdatedAt(new \DateTime($source->updated_time));
@@ -250,7 +253,9 @@ class FacebookManager extends AbstractSocialNetwork
         $like = new Like();
 
         $like->setId($source->id);
-        $like->setName($source->name);
+        if (isset($source->name)) {
+            $like->setName($source->name);
+        }
 
         return $like;
     }
@@ -282,7 +287,9 @@ class FacebookManager extends AbstractSocialNetwork
         $user = new SocialUser();
 
         $user->setId($source->id);
-        $user->setName($source->name);
+        if (isset($source->name)) {
+            $user->setName($source->name);
+        }
 
         return $user;
     }
