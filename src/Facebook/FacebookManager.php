@@ -59,7 +59,7 @@ class FacebookManager extends AbstractSocialNetwork
                 http_build_query(
                     array_merge(
                         array(
-                            'fields'  => 'privacy,message,link,name,status_type,likes,comments,type,updated_time,from,attachments',
+                            'fields'  => 'privacy,message,link,name,status_type,likes,comments,type,created_time,updated_time,from,attachments',
                             'summary' => 'true'
                         ),
                         $queryParams
