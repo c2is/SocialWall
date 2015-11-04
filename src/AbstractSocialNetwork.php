@@ -175,6 +175,7 @@ abstract class AbstractSocialNetwork
     protected function execute($call, array $params = array())
     {
         $cacheProvider = $this->cacheProvider;
+        $limit         = $params['limit'];
 
         if ($cacheProvider && $cacheProvider->isCacheFresh($this->name, $call)) {
             return $cacheProvider->getCache($this->name, $call);
@@ -189,6 +190,7 @@ abstract class AbstractSocialNetwork
         $callMethodName  = sprintf('retrieve%s', ucfirst($call));
 
         try {
+            /** @var SocialItemResult $result */
             $result = $this->$callMethodName($params, $queryParameters);
         } catch (\Exception $e) {
             error_log(
@@ -199,6 +201,7 @@ abstract class AbstractSocialNetwork
 
         if ($cacheProvider && $result) {
             $cacheProvider->setCache($this->name, $call, $result);
+            $result->setItems(array_slice($result->getItems(), 0, $limit));
         }
 
         return $result;
