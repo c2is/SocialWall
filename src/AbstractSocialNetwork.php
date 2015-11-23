@@ -17,6 +17,7 @@ abstract class AbstractSocialNetwork
 {
     const CALL_ITEMS_FOR_USER = 'itemsForUser';
     const CALL_ITEMS_FOR_TAG = 'itemsForTag';
+    const CALL_ITEMS_FOR_LOCATION = 'itemsForLocation';
     const CALL_NUMBER_OF_ITEMS = 'numberOfItems';
     const CALL_NUMBER_OF_SUBSCRIBERS = 'numberOfSubscribers';
     const CACHE_ITEMS = 100;
@@ -45,6 +46,14 @@ abstract class AbstractSocialNetwork
      * @return SocialItemResult
      */
     abstract protected function retrieveItemsForTag(array $params = array(), array $queryParams = array());
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return SocialItemResult
+     */
+    abstract protected function retrieveItemsForLocation(array $params = array(), array $queryParams = array());
 
     /**
      * @param array $params
@@ -133,6 +142,18 @@ abstract class AbstractSocialNetwork
     /**
      * @param array $params
      *
+     * @return bool|\C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    public function getItemsForLocation(array $params = array())
+    {
+        return $this->execute(self::CALL_ITEMS_FOR_LOCATION, $params);
+    }
+
+    /**
+     * @param array $params
+     *
      * @return string
      * @throws \C2iS\SocialWall\Exception\InvalidParametersException
      * @throws \C2iS\SocialWall\Exception\NotImplementedException
@@ -176,13 +197,14 @@ abstract class AbstractSocialNetwork
     {
         $cacheProvider = $this->cacheProvider;
         $limit         = $params['limit'];
+        $useCache = (!isset($params['cache_disable']) || !$params['cache_disable']) && $cacheProvider;
 
-        if ($cacheProvider && $cacheProvider->isCacheFresh($this->name, $call)) {
-            return $cacheProvider->getCache($this->name, $call);
+        if ($useCache && $cacheProvider->isCacheFresh($this->name, $call, $params)) {
+            return $cacheProvider->getCache($this->name, $call, $params);
         }
 
         // If generating cache, ups the number of items retrieved from webservices
-        if ($cacheProvider) {
+        if ($useCache) {
             $params['limit'] = self::CACHE_ITEMS;
         }
 
@@ -199,7 +221,7 @@ abstract class AbstractSocialNetwork
             $result = false;
         }
 
-        if ($cacheProvider && $result) {
+        if ($useCache && $result) {
             $cacheProvider->setCache($this->name, $call, $result);
             $result->setItems(array_slice($result->getItems(), 0, $limit));
         }
@@ -295,6 +317,14 @@ abstract class AbstractSocialNetwork
      * @return array
      */
     protected function getItemsForTagRequiredParams()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getItemsForLocationRequiredParams()
     {
         return array();
     }

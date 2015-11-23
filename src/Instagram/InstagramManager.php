@@ -113,6 +113,41 @@ class InstagramManager extends AbstractSocialNetwork
      *
      * @return \C2iS\SocialWall\Model\SocialItemResult
      */
+    protected function retrieveItemsForLocation(array $params = array(), array $queryParams = array())
+    {
+        $queryParams['client_id'] = $this->clientId;
+        $content                  = $this->getFileContent(
+            sprintf(
+                'https://api.instagram.com/v1/media/search?%s',
+                http_build_query($queryParams)
+            )
+        );
+        $results                  = $response = $socialItems = array();
+
+        if ($content) {
+            $response = json_decode($content);
+            $results  = $response->data;
+        }
+
+        foreach ($results as $item) {
+            $socialItems[] = $this->createSocialItem($item);
+        }
+
+        $result = new SocialItemResult($socialItems);
+        $result->setPreviousPage(
+            isset($response->pagination->previous_url) ? $response->pagination->previous_url : null
+        );
+        $result->setNextPage(isset($response->pagination->next_url) ? $response->pagination->next_url : null);
+
+        return $result;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     */
     protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
     {
         $queryParams = http_build_query(
@@ -275,12 +310,33 @@ class InstagramManager extends AbstractSocialNetwork
     }
 
     /**
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function getFileContent($url)
+    {
+        set_error_handler(
+            function () { /* ignore warning errors from file_get_contents */
+            },
+            E_WARNING
+        );
+        $content = file_get_contents($url);
+        restore_error_handler();
+
+        return $content;
+    }
+
+    /**
      * @return array
      */
     public function getQueryParams()
     {
         return array(
             'limit' => 'count',
+            'lat',
+            'lng',
+            'distance',
         );
     }
 
@@ -290,7 +346,7 @@ class InstagramManager extends AbstractSocialNetwork
     public function getItemsForUserRequiredParams()
     {
         return array(
-            'user_id'
+            'user_id',
         );
     }
 
@@ -300,7 +356,19 @@ class InstagramManager extends AbstractSocialNetwork
     public function getItemsForTagRequiredParams()
     {
         return array(
-            'tag'
+            'tag',
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getItemsForLocationRequiredParams()
+    {
+        return array(
+            'lat',
+            'lng',
+            'distance' => 5000,
         );
     }
 
@@ -310,7 +378,7 @@ class InstagramManager extends AbstractSocialNetwork
     public function getNumberOfItemsRequiredParams()
     {
         return array(
-            'user_id'
+            'user_id',
         );
     }
 
@@ -320,7 +388,7 @@ class InstagramManager extends AbstractSocialNetwork
     public function getNumberOfSubscribersRequiredParams()
     {
         return array(
-            'user_id'
+            'user_id',
         );
     }
 }

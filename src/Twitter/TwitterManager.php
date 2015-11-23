@@ -36,15 +36,10 @@ class TwitterManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        if (is_array($queryParams['q'])) {
-            $queryParams['q'] = implode(' OR ', $queryParams['q']);
-        }
+        $queryParams = $this->formatQueryParams($params, $queryParams);
+        $queryParams['q'] .= sprintf(' from:%s', $params['user']);
 
-        if (!$params['retweet']) {
-            $queryParams['q'] .= ' -RT';
-        }
-
-        $response = $this->connection->get('/statuses/user_timeline', $queryParams);
+        $response = $this->connection->get('/search/tweets', $queryParams);
 
         return $response ? $this->getItemsFromResponse($response) : false;
     }
@@ -58,17 +53,50 @@ class TwitterManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
-        if (is_array($queryParams['q'])) {
-            $queryParams['q'] = implode(' OR ', $queryParams['q']);
-        }
+        $queryParams = $this->formatQueryParams($params, $queryParams);
+        $response = $this->connection->get('/search/tweets', $queryParams);
 
-        if (!$params['retweet']) {
-            $queryParams['q'] .= ' -RT';
-        }
+        return $response ? $this->getItemsFromResponse($response) : false;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
+    protected function retrieveItemsForLocation(array $params = array(), array $queryParams = array())
+    {
+        $queryParams = $this->formatQueryParams($params, $queryParams);
+        // Builds geocode parameter
+        $lat = (string) $params['lat'];
+        $lng = (string) $params['lng'];
+        $distance = (string) (((int) $params['distance']) / 1000);
+        $queryParams['geocode'] = sprintf('%s,%s,%skm', $lat, $lng, $distance);
 
         $response = $this->connection->get('/search/tweets', $queryParams);
 
         return $response ? $this->getItemsFromResponse($response) : false;
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return array
+     */
+    protected function formatQueryParams($params, $queryParams)
+    {
+        if (isset($queryParams['q']) && is_array($queryParams['q'])) {
+            $queryParams['q'] = implode(' OR ', $queryParams['q']);
+        }
+
+        if (!(isset($params['retweet']) && $params['retweet'])) {
+            $queryParams['q'] .= ' -RT';
+        }
+
+        return $queryParams;
     }
 
     /**
@@ -392,6 +420,7 @@ class TwitterManager extends AbstractSocialNetwork
         return array(
             'q'           => '',
             'result_type' => 'recent',
+            'retweet' => false,
         );
     }
 
@@ -401,18 +430,19 @@ class TwitterManager extends AbstractSocialNetwork
     protected function getItemsForUserRequiredParams()
     {
         return array(
-            'retweet' => false,
-            'user_id',
+            'user',
         );
     }
 
     /**
      * @return array
      */
-    protected function getItemsForTagRequiredParams()
+    protected function getItemsForLocationRequiredParams()
     {
         return array(
-            'retweet' => false,
+            'lat',
+            'lng',
+            'distance' => 5000,
         );
     }
 

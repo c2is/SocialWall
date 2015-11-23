@@ -89,6 +89,18 @@ class GooglePlusManager extends AbstractSocialNetwork
      * @return \C2iS\SocialWall\Model\SocialItemResult
      * @throws \C2iS\SocialWall\Exception\NotImplementedException
      */
+    protected function retrieveItemsForLocation(array $params = array(), array $queryParams = array())
+    {
+        throw new NotImplementedException('Not implemented yet');
+    }
+
+    /**
+     * @param array $params
+     * @param array $queryParams
+     *
+     * @return \C2iS\SocialWall\Model\SocialItemResult
+     * @throws \C2iS\SocialWall\Exception\NotImplementedException
+     */
     protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
     {
         throw new NotImplementedException(
