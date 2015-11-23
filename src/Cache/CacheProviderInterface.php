@@ -12,25 +12,28 @@ interface CacheProviderInterface
     /**
      * @param string $network
      * @param string $call
+     * @param array  $params
      *
      * @return boolean
      */
-    public function isCacheFresh($network, $call);
+    public function isCacheFresh($network, $call, array $params = array());
 
     /**
      * @param string $network
      * @param string $call
+     * @param array  $params
      *
      * @return mixed
      */
-    public function getCache($network, $call);
+    public function getCache($network, $call, array $params = array());
 
     /**
      * @param string $network
      * @param string $call
      * @param mixed  $result
+     * @param array  $params
      *
-     * @return boolean
+     * @return bool
      */
-    public function setCache($network, $call, $result);
+    public function setCache($network, $call, $result, array $params = array());
 }

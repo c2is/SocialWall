@@ -26,29 +26,29 @@ class FileCacheProvider implements CacheProviderInterface
     /**
      * @param string $network
      * @param string $call
+     * @param array  $params
      *
      * @return boolean
      */
-    public function isCacheFresh($network, $call)
+    public function isCacheFresh($network, $call, array $params = array())
     {
-        $file = $this->getFile($network, $call);
+        $file = $this->getFile($network, $call, $params);
 
-        return file_exists($file) && filesize($file = $this->getFile($network, $call)) && filemtime(
-            $file
-        ) + $this->duration > time();
+        return file_exists($file) && filesize($file) && filemtime($file) + $this->duration > time();
     }
 
     /**
      * @param string $network
      * @param string $call
+     * @param array  $params
      *
      * @return mixed
      */
-    public function getCache($network, $call)
+    public function getCache($network, $call, array $params = array())
     {
         $result = null;
 
-        if (file_exists($file = $this->getFile($network, $call))) {
+        if (file_exists($file = $this->getFile($network, $call, $params))) {
             $result = file_get_contents($file);
 
             if ($this->isJson($result)) {
@@ -68,20 +68,26 @@ class FileCacheProvider implements CacheProviderInterface
      * @param string $network
      * @param string $call
      * @param mixed  $result
+     * @param array  $params
      *
      * @return boolean
      */
-    public function setCache($network, $call, $result)
+    public function setCache($network, $call, $result, array $params = array())
     {
-        if ((is_string($result) && strlen($result) === 0) || ($result instanceof SocialItemResult && !count(
-                    $result->getItems()
-                )) || (!is_string($result) && !$result instanceof SocialItemResult)
+        if (
+            (is_string($result) && strlen($result) === 0) ||
+            ($result instanceof SocialItemResult && !count($result->getItems())) ||
+            (!is_string($result) && !$result instanceof SocialItemResult)
         ) {
             return;
         }
 
-        $file    = $this->getFile($network, $call);
+        $file    = $this->getFile($network, $call, $params);
         $dirName = dirname($file);
+
+        if (file_exists($dirName) && is_file($dirName)) {
+            unlink($dirName);
+        }
 
         if (!file_exists($dirName)) {
             mkdir('/'.$this->getAbsolutePath($dirName), 0777, true);
@@ -101,23 +107,14 @@ class FileCacheProvider implements CacheProviderInterface
 
     /**
      * @param string $network
-     *
-     * @return string
-     */
-    protected function getFilename($network)
-    {
-        return $network;
-    }
-
-    /**
-     * @param string $network
      * @param string $call
+     * @param array  $params
      *
      * @return string
      */
-    protected function getFile($network, $call)
+    protected function getFile($network, $call, array $params)
     {
-        return sprintf('%s/%s/%s', rtrim($this->path, '/'), $this->getFilename($network), $call);
+        return implode('/', array(rtrim($this->path, '/'), $network, $call, $this->getHashFromParams($params)));
     }
 
     /**
@@ -170,5 +167,17 @@ class FileCacheProvider implements CacheProviderInterface
         $serializerBuilder->setCacheDir(sprintf('%s/annotations', $this->path));
 
         return $serializerBuilder->build();
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return string
+     */
+    protected function getHashFromParams(array $params)
+    {
+        array_multisort($params);
+
+        return md5(serialize($params));
     }
 }
