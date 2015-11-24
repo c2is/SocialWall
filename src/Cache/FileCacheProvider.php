@@ -101,10 +101,10 @@ class FileCacheProvider implements CacheProviderInterface
 
         if (is_object($result)) {
             $serializer = $this->getSerializer();
-            $result     = $serializer->serialize($result, 'json');
+            $content    = $serializer->serialize($result, 'json');
         }
 
-        file_put_contents($file, $result);
+        file_put_contents($file, $content);
     }
 
     /**

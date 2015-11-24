@@ -224,7 +224,10 @@ abstract class AbstractSocialNetwork
 
         if ($useCache && $result) {
             $cacheProvider->setCache($this->name, $call, $result, $initialParams);
-            $result->setItems(array_slice($result->getItems(), 0, $limit));
+
+            if (is_object($result)) {
+                $result->setItems(array_slice($result->getItems(), 0, $limit));
+            }
         }
 
         return $result;
