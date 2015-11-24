@@ -26,7 +26,8 @@
         "google/apiclient": "~1.1",
         "facebook/php-sdk-v4": "~4.0.0",
         "abraham/twitteroauth": "~0.5.4",
-        "jms/serializer": "~1.0"
+        "jms/serializer": "~1.0",
+        "c2is/json-extractor": "~1.0"
     },
     "extra": {
         "branch-alias": {

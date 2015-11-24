@@ -2,6 +2,7 @@
 
 namespace C2iS\SocialWall\Cache;
 
+use C2iS\Component\Json\JsonExtractor;
 use C2iS\SocialWall\Model\SocialItemResult;
 use JMS\Serializer\SerializerBuilder;
 
@@ -49,12 +50,13 @@ class FileCacheProvider implements CacheProviderInterface
         $result = null;
 
         if (file_exists($file = $this->getFile($network, $call, $params))) {
-            $result = file_get_contents($file);
+            $content = file_get_contents($file);
+            JsonExtractor::extract($content, sprintf('$.items[%s:]', $params['limit']));
 
-            if ($this->isJson($result)) {
+            if ($this->isJson($content)) {
                 $serializer = $this->getSerializer();
                 $result     = $serializer->deserialize(
-                    file_get_contents($file),
+                    $content,
                     'C2iS\\SocialWall\\Model\\SocialItemResult',
                     'json'
                 );
