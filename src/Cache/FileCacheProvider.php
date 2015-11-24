@@ -176,6 +176,7 @@ class FileCacheProvider implements CacheProviderInterface
      */
     protected function getHashFromParams(array $params)
     {
+        unset($params['limit']);
         array_multisort($params);
 
         return md5(serialize($params));

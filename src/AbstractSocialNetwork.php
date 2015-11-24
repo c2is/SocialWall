@@ -198,9 +198,10 @@ abstract class AbstractSocialNetwork
         $cacheProvider = $this->cacheProvider;
         $limit         = $params['limit'];
         $useCache = (!isset($params['cache_disable']) || !$params['cache_disable']) && $cacheProvider;
+        $initialParams = $params;
 
-        if ($useCache && $cacheProvider->isCacheFresh($this->name, $call, $params)) {
-            return $cacheProvider->getCache($this->name, $call, $params);
+        if ($useCache && $cacheProvider->isCacheFresh($this->name, $call, $initialParams)) {
+            return $cacheProvider->getCache($this->name, $call, $initialParams);
         }
 
         // If generating cache, ups the number of items retrieved from webservices
@@ -222,7 +223,7 @@ abstract class AbstractSocialNetwork
         }
 
         if ($useCache && $result) {
-            $cacheProvider->setCache($this->name, $call, $result);
+            $cacheProvider->setCache($this->name, $call, $result, $initialParams);
             $result->setItems(array_slice($result->getItems(), 0, $limit));
         }
 
