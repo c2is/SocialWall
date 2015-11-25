@@ -99,6 +99,8 @@ class FileCacheProvider implements CacheProviderInterface
             touch($file);
         }
 
+        $content = $result;
+        
         if (is_object($result)) {
             $serializer = $this->getSerializer();
             $content    = $serializer->serialize($result, 'json');
