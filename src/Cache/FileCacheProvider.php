@@ -50,10 +50,10 @@ class FileCacheProvider implements CacheProviderInterface
         $result = null;
 
         if (file_exists($file = $this->getFile($network, $call, $params))) {
-            $content = file_get_contents($file);
-            JsonExtractor::extract($content, sprintf('$.items[%s:]', $params['limit']));
+            $result = $content = file_get_contents($file);
 
             if ($this->isJson($content)) {
+                JsonExtractor::extract($content, sprintf('$.items[%s:]', $params['limit']));
                 $serializer = $this->getSerializer();
                 $result     = $serializer->deserialize(
                     $content,
@@ -100,7 +100,7 @@ class FileCacheProvider implements CacheProviderInterface
         }
 
         $content = $result;
-        
+
         if (is_object($result)) {
             $serializer = $this->getSerializer();
             $content    = $serializer->serialize($result, 'json');
