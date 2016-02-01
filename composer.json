@@ -21,7 +21,7 @@
     "autoload": {
         "psr-4": {"C2iS\\SocialWall\\": "src/"}
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "google/apiclient": "~1.1",
         "facebook/php-sdk-v4": "~4.0.0",
@@ -31,12 +31,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-1.0": "1.0.x-dev"
-        },
-        "branch-alias": {
-            "dev-v2.0": "2.0.x-dev"
-        },
-        "branch-alias": {
+            "dev-1.0": "1.0.x-dev",
+            "dev-v2.0": "2.0.x-dev",
             "dev-master": "3.0.x-dev"
         }
     }
