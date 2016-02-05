@@ -200,8 +200,8 @@ abstract class AbstractSocialNetwork
         $useCache = (!isset($params['cache_disable']) || !$params['cache_disable']) && $cacheProvider;
         $initialParams = $params;
 
-        if ($useCache && $cacheProvider->isCacheFresh($this->name, $call, $initialParams)) {
-            return $cacheProvider->getCache($this->name, $call, $initialParams);
+        if ($useCache && $cacheProvider->isCacheFresh($this->name, $call, $initialParams) && ($cacheResult = $cacheProvider->getCache($this->name, $call, $initialParams))) {
+            return $cacheResult;
         }
 
         // If generating cache, ups the number of items retrieved from webservices

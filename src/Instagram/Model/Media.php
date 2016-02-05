@@ -5,11 +5,11 @@ namespace C2iS\SocialWall\Instagram\Model;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class Image
+ * Class Media
  *
  * @package C2iS\SocialWall\Instagram\Model
  */
-class Image
+class Media
 {
     /** @var string @Serializer\Type("string") */
     protected $type;

@@ -4,8 +4,8 @@ namespace C2iS\SocialWall\Instagram;
 
 use C2iS\SocialWall\AbstractSocialNetwork;
 use C2iS\SocialWall\Instagram\Model\Comment;
-use C2iS\SocialWall\Instagram\Model\Image;
 use C2iS\SocialWall\Instagram\Model\Like;
+use C2iS\SocialWall\Instagram\Model\Media;
 use C2iS\SocialWall\Instagram\Model\SocialItem;
 use C2iS\SocialWall\Instagram\Model\SocialUser;
 use C2iS\SocialWall\Model\SocialItemResult;
@@ -212,10 +212,18 @@ class InstagramManager extends AbstractSocialNetwork
         $images = array();
 
         foreach ($source->images as $type => $image) {
-            $images[$type] = $this->createImage($image, $type);
+            $images[$type] = $this->createMedia($image, $type);
         }
 
         $item->setImages($images);
+
+        $videos = array();
+
+        foreach ($source->videos as $type => $video) {
+            $videos[$type] = $this->createMedia($video, $type);
+        }
+
+        $item->setVideos($videos);
 
         $likes = array();
 
@@ -247,18 +255,18 @@ class InstagramManager extends AbstractSocialNetwork
      * @param object $source
      * @param string $type
      *
-     * @return \C2iS\SocialWall\Instagram\Model\Image
+     * @return \C2iS\SocialWall\Instagram\Model\Media
      */
-    protected function createImage($source, $type)
+    protected function createMedia($source, $type)
     {
-        $image = new Image();
+        $media = new Media();
 
-        $image->setType($type);
-        $image->setUrl($source->url);
-        $image->setWidth($source->width);
-        $image->setHeight($source->height);
+        $media->setType($type);
+        $media->setUrl($source->url);
+        $media->setWidth($source->width);
+        $media->setHeight($source->height);
 
-        return $image;
+        return $media;
     }
 
     /**
@@ -317,7 +325,7 @@ class InstagramManager extends AbstractSocialNetwork
     protected function getFileContent($url)
     {
         set_error_handler(
-            function () { /* ignore warning errors from file_get_contents */
+            function ($code, $string) { /* ignore warning errors from file_get_contents */
             },
             E_WARNING
         );

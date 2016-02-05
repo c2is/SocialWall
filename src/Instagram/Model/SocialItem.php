@@ -33,8 +33,11 @@ class SocialItem extends AbstractSocialItem
     /** @var array<string> @Serializer\Type("array<string>") */
     protected $tags;
 
-    /** @var array<string, Image> @Serializer\Type("array<string, C2iS\SocialWall\Instagram\Model\Image>") */
+    /** @var array<string, Media> @Serializer\Type("array<string, C2iS\SocialWall\Instagram\Model\Media>") */
     protected $images;
+
+    /** @var array<string, Media> @Serializer\Type("array<string, C2iS\SocialWall\Instagram\Model\Media>") */
+    protected $videos;
 
     /** @var array<Like> @Serializer\Type("array<C2iS\SocialWall\Instagram\Model\Like>") */
     protected $likes;
@@ -204,6 +207,34 @@ class SocialItem extends AbstractSocialItem
     public function setImages($images)
     {
         $this->images = $images;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getVideos()
+    {
+        return $this->videos;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVideo()
+    {
+        return isset($this->videos['standard_resolution']) ? $this->videos['standard_resolution']->getUrl() : null;
+    }
+
+    /**
+     * @param array $videos
+     *
+     * @return $this
+     */
+    public function setVideos($videos)
+    {
+        $this->videos = $videos;
 
         return $this;
     }
