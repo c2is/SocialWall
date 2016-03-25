@@ -50,6 +50,10 @@ class FacebookManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
+        if (isset($queryParams['limit'])) {
+            $queryParams['limit'] = min($queryParams['limit'], 40);
+        }
+
         $request = new \Facebook\FacebookRequest(
             $this->session,
             'GET',

@@ -33,7 +33,7 @@ class InstagramManager extends AbstractSocialNetwork
     {
         $queryParams['client_id'] = $this->clientId;
         set_error_handler(
-            function () { /* ignore warning errors from file_get_contents*/
+            function ($code, $string) { /* ignore warning errors from file_get_contents*/
             },
             E_WARNING
         );
@@ -75,7 +75,7 @@ class InstagramManager extends AbstractSocialNetwork
     {
         $queryParams['client_id'] = $this->clientId;
         set_error_handler(
-            function () { /* ignore warning errors from file_get_contents*/
+            function ($code, $string) { /* ignore warning errors from file_get_contents*/
             },
             E_WARNING
         );
@@ -325,7 +325,7 @@ class InstagramManager extends AbstractSocialNetwork
     protected function getFileContent($url)
     {
         set_error_handler(
-            function ($code, $string) { /* ignore warning errors from file_get_contents */
+            function ($code, $string) {/* ignore warning errors from file_get_contents */
             },
             E_WARNING
         );

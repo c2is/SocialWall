@@ -196,7 +196,7 @@ abstract class AbstractSocialNetwork
     protected function execute($call, array $params = array())
     {
         $cacheProvider = $this->cacheProvider;
-        $limit         = $params['limit'];
+        $limit         = isset($params['limit']) ? $params['limit'] : null;
         $useCache = (!isset($params['cache_disable']) || !$params['cache_disable']) && $cacheProvider;
         $initialParams = $params;
 
