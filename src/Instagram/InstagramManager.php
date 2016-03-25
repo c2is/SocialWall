@@ -219,8 +219,10 @@ class InstagramManager extends AbstractSocialNetwork
 
         $videos = array();
 
-        foreach ($source->videos as $type => $video) {
-            $videos[$type] = $this->createMedia($video, $type);
+        if (isset($source->videos)) {
+            foreach ($source->videos as $type => $video) {
+                $videos[$type] = $this->createMedia($video, $type);
+            }
         }
 
         $item->setVideos($videos);
