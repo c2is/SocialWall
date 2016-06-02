@@ -39,7 +39,12 @@ class InstagramManager extends AbstractSocialNetwork
                 http_build_query($queryParams)
             )
         );
-        $results                  = $response = $socialItems = array();
+
+        if (!$content) {
+            $content = $this->getFallbackContent();
+        }
+
+        $results = $response = $socialItems = array();
 
         if ($content) {
             $response = json_decode($content);
@@ -75,7 +80,12 @@ class InstagramManager extends AbstractSocialNetwork
                 http_build_query($queryParams)
             )
         );
-        $results                  = $response = $socialItems = array();
+
+        if (!$content) {
+            $content = $this->getFallbackContent();
+        }
+
+        $results = $response = $socialItems = array();
 
         if ($content) {
             $response = json_decode($content);
@@ -251,19 +261,32 @@ class InstagramManager extends AbstractSocialNetwork
     }
 
     /**
+     * @return string
+     */
+    protected function getFallbackContent()
+    {
+        return $this->getFileContent('https://api.instagram.com/v1/users/self/recent?access_token='.$this->clientId);
+    }
+
+    /**
      * @param string $url
      *
      * @return string
      */
     protected function getFileContent($url)
     {
-        set_error_handler(
-            function () { /* ignore warning errors from file_get_contents*/
-            },
-            E_WARNING
+        $opts    = array(
+            'http' =>
+                array(
+                    'ignore_errors' => '1'
+                )
         );
-        $content = file_get_contents($url);
-        restore_error_handler();
+        $context = stream_context_create($opts);
+        $content = file_get_contents($url, false, $context);
+
+        if (isset($content['code']) && 200 !== $content['code']) {
+            return false;
+        }
 
         return $content;
     }
