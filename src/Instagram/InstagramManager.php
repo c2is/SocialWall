@@ -32,20 +32,18 @@ class InstagramManager extends AbstractSocialNetwork
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
         $queryParams['access_token'] = $this->clientId;
-        set_error_handler(
-            function ($code, $string) { /* ignore warning errors from file_get_contents*/
-            },
-            E_WARNING
-        );
-        $content = file_get_contents(
+        $content = $this->getFileContent(
             sprintf(
                 'https://api.instagram.com/v1/users/%s/media/recent?%s',
                 $params['user_id'],
                 http_build_query($queryParams)
             )
         );
-        restore_error_handler();
         $results = $response = $socialItems = array();
+
+        if (!$content) {
+            $content = $this->getFallbackContent();
+        }
 
         if ($content) {
             $response = json_decode($content);
@@ -74,24 +72,18 @@ class InstagramManager extends AbstractSocialNetwork
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
         $queryParams['access_token'] = $this->clientId;
-        set_error_handler(
-            function ($code, $string) { /* ignore warning errors from file_get_contents*/
-            },
-            E_WARNING
-        );
-        var_dump(sprintf(
-        'https://api.instagram.com/v1/tags/%s/media/recent?%s',
-        $params['tag'],
-        http_build_query($queryParams)
-    ));
-        $content = file_get_contents(
+        $content = $this->getFileContent(
             sprintf(
                 'https://api.instagram.com/v1/tags/%s/media/recent?%s',
                 $params['tag'],
                 http_build_query($queryParams)
             )
         );
-        restore_error_handler();
+
+        if (!$content) {
+            $content = $this->getFallbackContent();
+        }
+
         $results = $response = $socialItems = array();
 
         if ($content) {
@@ -127,7 +119,12 @@ class InstagramManager extends AbstractSocialNetwork
                 http_build_query($queryParams)
             )
         );
-        $results                  = $response = $socialItems = array();
+
+        if (!$content) {
+            $content = $this->getFallbackContent();
+        }
+
+        $results = $response = $socialItems = array();
 
         if ($content) {
             $response = json_decode($content);
@@ -161,17 +158,14 @@ class InstagramManager extends AbstractSocialNetwork
             )
         );
         $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
+        $content = $this->getFileContent($url);
 
-        set_error_handler(
-            function () { /* ignore warning errors from file_get_contents*/
-            },
-            E_WARNING
-        );
-        $content = file_get_contents($url);
-        restore_error_handler();
-        $response = json_decode($content);
+        if ($content) {
+            $response = json_decode($content);
+            return (string)$response->data->counts->media;
+        }
 
-        return (string)$response->data->counts->media;
+        return 0;
     }
 
     /**
@@ -187,17 +181,15 @@ class InstagramManager extends AbstractSocialNetwork
                 'access_token' => $this->clientId,
             )
         );
-        $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
-        set_error_handler(
-            function () { /* ignore warning errors from file_get_contents*/
-            },
-            E_WARNING
-        );
-        $content = file_get_contents($url);
-        restore_error_handler();
-        $response = json_decode($content);
+        $url      = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
+        $content  = $this->getFileContent($url);
 
-        return (string)$response->data->counts->followed_by;
+        if ($content) {
+            $response = json_decode($content);
+            return (string)$response->data->counts->followed_by;
+        }
+
+        return 0;
     }
 
     /**
@@ -326,19 +318,31 @@ class InstagramManager extends AbstractSocialNetwork
     }
 
     /**
+     * @return string
+     */
+    protected function getFallbackContent()
+    {
+        return $this->getFileContent('https://api.instagram.com/v1/users/self/recent?access_token='.$this->clientId);
+    }
+
+    /**
      * @param string $url
      *
      * @return string
      */
     protected function getFileContent($url)
     {
-        set_error_handler(
-            function ($code, $string) {/* ignore warning errors from file_get_contents */
-            },
-            E_WARNING
+        $opts = array('http' =>
+            array(
+                'ignore_errors' => '1'
+            )
         );
-        $content = file_get_contents($url);
-        restore_error_handler();
+        $context = stream_context_create($opts);
+        $content = file_get_contents($url, false, $context);
+
+        if (isset($content['code']) && 200 !== $content['code']) {
+            return false;
+        }
 
         return $content;
     }
