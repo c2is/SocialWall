@@ -31,7 +31,7 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        $queryParams['client_id'] = $this->clientId;
+        $queryParams['access_token'] = $this->clientId;
         set_error_handler(
             function ($code, $string) { /* ignore warning errors from file_get_contents*/
             },
@@ -73,12 +73,17 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
-        $queryParams['client_id'] = $this->clientId;
+        $queryParams['access_token'] = $this->clientId;
         set_error_handler(
             function ($code, $string) { /* ignore warning errors from file_get_contents*/
             },
             E_WARNING
         );
+        var_dump(sprintf(
+        'https://api.instagram.com/v1/tags/%s/media/recent?%s',
+        $params['tag'],
+        http_build_query($queryParams)
+    ));
         $content = file_get_contents(
             sprintf(
                 'https://api.instagram.com/v1/tags/%s/media/recent?%s',
@@ -115,7 +120,7 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForLocation(array $params = array(), array $queryParams = array())
     {
-        $queryParams['client_id'] = $this->clientId;
+        $queryParams['access_token'] = $this->clientId;
         $content                  = $this->getFileContent(
             sprintf(
                 'https://api.instagram.com/v1/media/search?%s',
@@ -152,10 +157,11 @@ class InstagramManager extends AbstractSocialNetwork
     {
         $queryParams = http_build_query(
             array(
-                'client_id' => $this->clientId,
+                'access_token' => $this->clientId,
             )
         );
         $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
+
         set_error_handler(
             function () { /* ignore warning errors from file_get_contents*/
             },
@@ -178,7 +184,7 @@ class InstagramManager extends AbstractSocialNetwork
     {
         $queryParams = http_build_query(
             array(
-                'client_id' => $this->clientId,
+                'access_token' => $this->clientId,
             )
         );
         $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
