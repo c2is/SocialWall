@@ -39,12 +39,14 @@ class InstagramManager extends AbstractSocialNetwork
                 $queryParams
             )
         );
-
-        set_error_handler(function() { /* ignore warning errors from file_get_contents*/ }, E_WARNING);
-        $content = file_get_contents(
+        $content     = $this->getFileContent(
             urlencode(sprintf('https://api.instagram.com/v1/tags/%s/media/recent?%s', $params['tag'], $queryParams))
         );
-        restore_error_handler();
+
+        if (!$content) {
+            $content = $this->getFallbackContent();
+        }
+
         $results = $response = $socialItems = array();
 
         if ($content) {
@@ -178,6 +180,37 @@ class InstagramManager extends AbstractSocialNetwork
         $user->setPicture($source->profile_picture);
 
         return $user;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFallbackContent()
+    {
+        return $this->getFileContent('https://api.instagram.com/v1/users/self/recent?access_token='.$this->clientId);
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function getFileContent($url)
+    {
+        $opts    = array(
+            'http' =>
+                array(
+                    'ignore_errors' => '1'
+                )
+        );
+        $context = stream_context_create($opts);
+        $content = file_get_contents($url, false, $context);
+
+        if (isset($content['code']) && 200 !== $content['code']) {
+            return false;
+        }
+
+        return $content;
     }
 
     /**
