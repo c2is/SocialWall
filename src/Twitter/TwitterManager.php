@@ -54,7 +54,7 @@ class TwitterManager extends AbstractSocialNetwork
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
         $queryParams = $this->formatQueryParams($params, $queryParams);
-        $response = $this->connection->get('/search/tweets', $queryParams);
+        $response    = $this->connection->get('/search/tweets', $queryParams);
 
         return $response ? $this->getItemsFromResponse($response) : false;
     }
@@ -70,9 +70,9 @@ class TwitterManager extends AbstractSocialNetwork
     {
         $queryParams = $this->formatQueryParams($params, $queryParams);
         // Builds geocode parameter
-        $lat = (string) $params['lat'];
-        $lng = (string) $params['lng'];
-        $distance = (string) (((int) $params['distance']) / 1000);
+        $lat                    = (string)$params['lat'];
+        $lng                    = (string)$params['lng'];
+        $distance               = (string)(((int)$params['distance']) / 1000);
         $queryParams['geocode'] = sprintf('%s,%s,%skm', $lat, $lng, $distance);
 
         $response = $this->connection->get('/search/tweets', $queryParams);
@@ -420,7 +420,7 @@ class TwitterManager extends AbstractSocialNetwork
         return array(
             'q'           => '',
             'result_type' => 'recent',
-            'retweet' => false,
+            'retweet'     => false,
         );
     }
 

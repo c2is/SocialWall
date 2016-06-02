@@ -166,8 +166,10 @@ class YouTubeManager extends AbstractSocialNetwork
     {
         $service = new \Google_Service_YouTube($this->client);
 
-        return (string)$service->channels->listChannels('id,statistics', array('id' => $queryParams['channelId']))->getItems(
-        )[0]->getStatistics()->viewCount;
+        return (string)$service->channels->listChannels(
+            'id,statistics',
+            array('id' => $queryParams['channelId'])
+        )->getItems()[0]->getStatistics()->viewCount;
     }
 
     /**

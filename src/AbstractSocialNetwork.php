@@ -197,10 +197,15 @@ abstract class AbstractSocialNetwork
     {
         $cacheProvider = $this->cacheProvider;
         $limit         = isset($params['limit']) ? $params['limit'] : null;
-        $useCache = (!isset($params['cache_disable']) || !$params['cache_disable']) && $cacheProvider;
+        $useCache      = (!isset($params['cache_disable']) || !$params['cache_disable']) && $cacheProvider;
         $initialParams = $params;
 
-        if ($useCache && $cacheProvider->isCacheFresh($this->name, $call, $initialParams) && ($cacheResult = $cacheProvider->getCache($this->name, $call, $initialParams))) {
+        if ($useCache && $cacheProvider->isCacheFresh(
+                $this->name,
+                $call,
+                $initialParams
+            ) && ($cacheResult = $cacheProvider->getCache($this->name, $call, $initialParams))
+        ) {
             return $cacheResult;
         }
 
