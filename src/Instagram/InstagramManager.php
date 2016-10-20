@@ -15,12 +15,41 @@ class InstagramManager extends AbstractSocialNetwork
     /** @var string */
     protected $clientId;
 
+    /** @var string */
+    protected $secret;
+
     /**
      * @param $clientId
      */
-    public function __construct($clientId)
+    public function __construct($clientId, $secret = null)
     {
         $this->clientId = $clientId;
+        $this->secret   = $secret;
+    }
+
+    /**
+     * @param string $endpoint
+     * @param array  $params
+     *
+     * @return string
+     */
+    protected function generateUrl($endpoint, array $params = array())
+    {
+        $params['access_token'] = $this->clientId;
+
+        if ($this->secret) {
+            ksort($params);
+            $sig = $endpoint;
+
+            foreach ($params as $key => $value) {
+                $sig .= '|'.$key.'='.$value;
+            }
+
+            $sig                = hash_hmac('sha256', $sig, $this->secret, false);
+            $params['sig'] = $sig;
+        }
+
+        return sprintf('https://api.instagram.com/v1%s?%s', $endpoint, http_build_query($params));
     }
 
     /**
@@ -31,15 +60,9 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForUser(array $params = array(), array $queryParams = array())
     {
-        $queryParams['access_token'] = $this->clientId;
-        $content                     = $this->getFileContent(
-            sprintf(
-                'https://api.instagram.com/v1/users/%s/media/recent?%s',
-                $params['user_id'],
-                http_build_query($queryParams)
-            )
-        );
-        $results                     = $response = $socialItems = array();
+        $endpoint = sprintf('/users/%s/media/recent', $params['user_id']);
+        $content  = $this->getFileContent($this->generateUrl($endpoint, $queryParams));
+        $results  = $response = $socialItems = array();
 
         if (!$content) {
             $content = $this->getFallbackContent();
@@ -71,14 +94,8 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForTag(array $params = array(), array $queryParams = array())
     {
-        $queryParams['access_token'] = $this->clientId;
-        $content                     = $this->getFileContent(
-            sprintf(
-                'https://api.instagram.com/v1/tags/%s/media/recent?%s',
-                $params['tag'],
-                http_build_query($queryParams)
-            )
-        );
+        $endpoint = sprintf('/tags/%s/media/recent', $params['tag']);
+        $content  = $this->getFileContent($this->generateUrl($endpoint, $queryParams));
 
         if (!$content) {
             $content = $this->getFallbackContent();
@@ -112,13 +129,8 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveItemsForLocation(array $params = array(), array $queryParams = array())
     {
-        $queryParams['access_token'] = $this->clientId;
-        $content                     = $this->getFileContent(
-            sprintf(
-                'https://api.instagram.com/v1/media/search?%s',
-                http_build_query($queryParams)
-            )
-        );
+        $endpoint = '/media/search';
+        $content  = $this->getFileContent($this->generateUrl($endpoint, $queryParams));
 
         if (!$content) {
             $content = $this->getFallbackContent();
@@ -152,13 +164,8 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveNumberOfItems(array $params = array(), array $queryParams = array())
     {
-        $queryParams = http_build_query(
-            array(
-                'access_token' => $this->clientId,
-            )
-        );
-        $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
-        $content     = $this->getFileContent($url);
+        $endpoint = sprintf('/users/%s', $params['user_id']);
+        $content  = $this->getFileContent($this->generateUrl($endpoint, $queryParams));
 
         if ($content) {
             $response = json_decode($content);
@@ -177,13 +184,8 @@ class InstagramManager extends AbstractSocialNetwork
      */
     protected function retrieveNumberOfSubscribers(array $params = array(), array $queryParams = array())
     {
-        $queryParams = http_build_query(
-            array(
-                'access_token' => $this->clientId,
-            )
-        );
-        $url         = sprintf('https://api.instagram.com/v1/users/%s?%s', $params['user_id'], $queryParams);
-        $content     = $this->getFileContent($url);
+        $endpoint = sprintf('/users/%s', $params['user_id']);
+        $content  = $this->getFileContent($this->generateUrl($endpoint, $queryParams));
 
         if ($content) {
             $response = json_decode($content);
@@ -229,16 +231,20 @@ class InstagramManager extends AbstractSocialNetwork
 
         $likes = array();
 
-        foreach ($source->likes->data as $like) {
-            $likes[] = $this->createLike($like);
+        if (isset($source->likes->data)) {
+            foreach ($source->likes->data as $like) {
+                $likes[] = $this->createLike($like);
+            }
         }
 
         $item->setLikes($likes);
 
         $comments = array();
 
-        foreach ($source->comments->data as $comment) {
-            $comments[] = $this->createComment($comment);
+        if (isset($source->comments->data)) {
+            foreach ($source->comments->data as $comment) {
+                $comments[] = $this->createComment($comment);
+            }
         }
 
         if (isset($source->location) && ($location = $source->location)) {
