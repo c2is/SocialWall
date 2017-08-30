@@ -72,7 +72,7 @@ class SocialWall
      *
      * @return $this
      */
-    public function setCacheProvider(CacheProviderInterface $cacheProvider)
+    public function setCacheProvider(CacheProviderInterface $cacheProvider = null)
     {
         $this->cacheProvider = $cacheProvider;
 
