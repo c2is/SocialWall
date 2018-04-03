@@ -105,7 +105,8 @@ class InstagramManager extends AbstractSocialNetwork
 
         if ($content) {
             $response = json_decode($content);
-            $results  = $response->data;
+
+            $results  = isset($response->data) ? $response->data : [];
         }
 
         foreach ($results as $item) {
@@ -207,7 +208,7 @@ class InstagramManager extends AbstractSocialNetwork
 
         $item->setId($source->id);
         $item->setType($source->type);
-        $item->setTitle($source->caption->text);
+        $item->setTitle($source->caption ? $source->caption->text : '');
         $item->setLink($source->link);
         $item->setTags($source->tags);
 

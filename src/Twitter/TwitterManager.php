@@ -92,6 +92,10 @@ class TwitterManager extends AbstractSocialNetwork
             $queryParams['q'] = implode(' OR ', $queryParams['q']);
         }
 
+        if (!isset($queryParams['q'])) {
+            $queryParams['q'] = '';
+        }
+
         if (!(isset($params['retweet']) && $params['retweet'])) {
             $queryParams['q'] .= ' -RT';
         }
